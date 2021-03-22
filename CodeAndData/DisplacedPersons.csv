@@ -1,0 +1,955 @@
+"","Country","Year","Displaced Persons"
+"1","Albania",2009,150
+"2","Albania",2013,450
+"3","Albania",2014,24
+"4","Albania",2015,4200
+"5","Albania",2016,3100
+"6","Algeria",2008,25000
+"7","Algeria",2009,2500
+"8","Algeria",2013,340
+"9","Algeria",2014,4500
+"10","Algeria",2015,19000
+"11","Algeria",2016,2000
+"12","Angola",2009,86000
+"13","Angola",2010,79000
+"14","Angola",2011,227000
+"15","Angola",2012,6400
+"16","Angola",2013,2500
+"17","Angola",2015,5600
+"18","Angola",2016,19000
+"19","Antigua and Barbuda",2008,45
+"20","Arab World",2008,131600
+"21","Arab World",2015,202630
+"22","Argentina",2008,640
+"23","Argentina",2012,2000
+"24","Argentina",2013,6900
+"25","Argentina",2014,32000
+"26","Argentina",2015,36000
+"27","Argentina",2016,12000
+"28","Australia",2008,1000
+"29","Australia",2009,7500
+"30","Australia",2010,1000
+"31","Australia",2011,10000
+"32","Australia",2012,16000
+"33","Australia",2013,13000
+"34","Australia",2014,1200
+"35","Australia",2015,5700
+"36","Australia",2016,3200
+"37","Austria",2013,1000
+"38","Austria",2016,250
+"39","Azerbaijan",2009,200
+"40","Azerbaijan",2010,32000
+"41","Azerbaijan",2012,36000
+"42","Bangladesh",2008,61000
+"43","Bangladesh",2009,1342000
+"44","Bangladesh",2010,569000
+"45","Bangladesh",2011,400000
+"46","Bangladesh",2012,651000
+"47","Bangladesh",2013,1160000
+"48","Bangladesh",2014,543000
+"49","Bangladesh",2015,531000
+"50","Bangladesh",2016,614000
+"51","Barbados",2016,90
+"52","Belize",2008,400
+"53","Belize",2013,130
+"54","Belize",2015,250
+"55","Belize",2016,3500
+"56","Benin",2008,150000
+"57","Benin",2009,40000
+"58","Benin",2010,275000
+"59","Benin",2012,10000
+"60","Benin",2013,15000
+"61","Benin",2016,960
+"62","Bhutan",2011,20000
+"63","Bhutan",2015,2900
+"64","Bhutan",2016,690
+"65","Bolivia",2009,630
+"66","Bolivia",2010,100000
+"67","Bolivia",2011,11000
+"68","Bolivia",2012,9000
+"69","Bolivia",2013,4700
+"70","Bolivia",2014,190000
+"71","Bolivia",2015,11000
+"72","Bolivia",2016,7000
+"73","Bosnia and Herzegovina",2014,91000
+"74","Bosnia and Herzegovina",2015,320
+"75","Botswana",2009,870
+"76","Botswana",2013,1200
+"77","Botswana",2014,2000
+"78","Botswana",2015,250
+"79","Brazil",2008,309000
+"80","Brazil",2009,523000
+"81","Brazil",2010,230000
+"82","Brazil",2011,170000
+"83","Brazil",2012,35000
+"84","Brazil",2013,82000
+"85","Brazil",2014,150000
+"86","Brazil",2015,59000
+"87","Brazil",2016,14000
+"88","Bulgaria",2012,2100
+"89","Bulgaria",2014,2300
+"90","Bulgaria",2015,820
+"91","Bulgaria",2016,24
+"92","Burkina Faso",2008,28000
+"93","Burkina Faso",2009,150000
+"94","Burkina Faso",2010,20000
+"95","Burkina Faso",2013,1800
+"96","Burkina Faso",2015,3700
+"97","Burkina Faso",2016,18000
+"98","Burundi",2008,2800
+"99","Burundi",2010,1500
+"100","Burundi",2014,13000
+"101","Burundi",2015,3100
+"102","Burundi",2016,6600
+"103","Cambodia",2009,66000
+"104","Cambodia",2010,32000
+"105","Cambodia",2011,214000
+"106","Cambodia",2013,144000
+"107","Cambodia",2014,151000
+"108","Cambodia",2015,10000
+"109","Cambodia",2016,8300
+"110","Cameroon",2008,1000
+"111","Cameroon",2010,3000
+"112","Cameroon",2012,30000
+"113","Cameroon",2013,10000
+"114","Cameroon",2014,3500
+"115","Cameroon",2015,11000
+"116","Canada",2008,2000
+"117","Canada",2013,120000
+"118","Canada",2014,5800
+"119","Canada",2015,13000
+"120","Canada",2016,93000
+"121","Cayman Islands",2008,720
+"122","Central African Republic",2008,14000
+"123","Central African Republic",2009,15000
+"124","Central African Republic",2012,18000
+"125","Central African Republic",2013,14000
+"126","Central African Republic",2014,940
+"127","Central African Republic",2015,1100
+"128","Central African Republic",2016,7500
+"129","Chad",2008,10000
+"130","Chad",2009,5800
+"131","Chad",2010,70000
+"132","Chad",2012,500000
+"133","Chad",2013,88000
+"134","Chad",2014,9900
+"135","Chad",2016,5700
+"136","Chile",2008,43000
+"137","Chile",2009,700
+"138","Chile",2010,2000000
+"139","Chile",2011,4000
+"140","Chile",2012,7300
+"141","Chile",2013,3600
+"142","Chile",2014,985000
+"143","Chile",2015,1047000
+"144","Chile",2016,16000
+"145","China",2008,18660000
+"146","China",2009,4031000
+"147","China",2010,15920000
+"148","China",2011,4490000
+"149","China",2012,5731000
+"150","China",2013,5924000
+"151","China",2014,3612000
+"152","China",2015,3602000
+"153","China",2016,7434000
+"154","Colombia",2008,63000
+"155","Colombia",2009,9100
+"156","Colombia",2010,3000000
+"157","Colombia",2011,149000
+"158","Colombia",2012,71000
+"159","Colombia",2013,11000
+"160","Colombia",2014,20000
+"161","Colombia",2015,4600
+"162","Colombia",2016,31000
+"163","Comoros",2012,11000
+"164","Comoros",2014,12000
+"165","Costa Rica",2008,12000
+"166","Costa Rica",2009,2400
+"167","Costa Rica",2011,2100
+"168","Costa Rica",2012,2000
+"169","Costa Rica",2013,65
+"170","Costa Rica",2015,1100
+"171","Costa Rica",2016,5800
+"172","Croatia",2014,18000
+"173","Croatia",2015,1000
+"174","Cuba",2008,1014000
+"175","Cuba",2012,352000
+"176","Cuba",2015,2000
+"177","Cuba",2016,1079000
+"178","Cyprus",2016,40
+"179","Czech Republic",2013,26000
+"180","Dominica",2011,96
+"181","Dominica",2013,18
+"182","Dominica",2015,710
+"183","Dominican Republic",2008,8900
+"184","Dominican Republic",2011,17000
+"185","Dominican Republic",2012,43000
+"186","Dominican Republic",2013,14000
+"187","Dominican Republic",2014,11000
+"188","Dominican Republic",2015,28000
+"189","Dominican Republic",2016,52000
+"190","Early-demographic dividend",2008,12860680
+"191","Early-demographic dividend",2009,10387790
+"192","Early-demographic dividend",2010,17575500
+"193","Early-demographic dividend",2011,6160300
+"194","Early-demographic dividend",2012,16228900
+"195","Early-demographic dividend",2013,12017422
+"196","Early-demographic dividend",2014,12308988
+"197","Early-demographic dividend",2015,12603882
+"198","Early-demographic dividend",2016,11860701
+"199","East Asia & Pacific",2008,24278485
+"200","East Asia & Pacific",2009,7382300
+"201","East Asia & Pacific",2010,19119650
+"202","East Asia & Pacific",2011,10107600
+"203","East Asia & Pacific",2012,10482800
+"204","East Asia & Pacific",2013,15612742
+"205","East Asia & Pacific",2014,11683477
+"206","East Asia & Pacific",2015,8305770
+"207","East Asia & Pacific",2016,16427753
+"208","East Asia & Pacific (excluding high income)",2008,24276685
+"209","East Asia & Pacific (excluding high income)",2009,7349800
+"210","East Asia & Pacific (excluding high income)",2010,19029900
+"211","East Asia & Pacific (excluding high income)",2011,9197800
+"212","East Asia & Pacific (excluding high income)",2012,10152200
+"213","East Asia & Pacific (excluding high income)",2013,14932832
+"214","East Asia & Pacific (excluding high income)",2014,10965826
+"215","East Asia & Pacific (excluding high income)",2015,7786630
+"216","East Asia & Pacific (excluding high income)",2016,15506033
+"217","Ecuador",2008,14000
+"218","Ecuador",2010,500
+"219","Ecuador",2012,4800
+"220","Ecuador",2013,7500
+"221","Ecuador",2014,570
+"222","Ecuador",2015,1900
+"223","Ecuador",2016,289000
+"224","El Salvador",2008,95
+"225","El Salvador",2009,15000
+"226","El Salvador",2010,16000
+"227","El Salvador",2011,60000
+"228","El Salvador",2013,2300
+"229","El Salvador",2014,22
+"230","El Salvador",2015,2000
+"231","El Salvador",2016,480
+"232","Eritrea",2013,100
+"233","Ethiopia",2008,73000
+"234","Ethiopia",2010,10000
+"235","Ethiopia",2012,20000
+"236","Ethiopia",2013,61000
+"237","Ethiopia",2014,49000
+"238","Ethiopia",2015,104000
+"239","Ethiopia",2016,347000
+"240","Euro area",2013,67090
+"241","Euro area",2016,42880
+"242","Europe & Central Asia",2013,149733
+"243","Europe & Central Asia",2016,56782
+"244","Europe & Central Asia (excluding high income)",2014,152584
+"245","Europe & Central Asia (excluding high income)",2015,50700
+"246","Europe & Central Asia (excluding high income)",2016,12442
+"247","European Union",2013,114390
+"248","European Union",2016,45604
+"249","Fiji",2009,13000
+"250","Fiji",2010,18000
+"251","Fiji",2012,27000
+"252","Fiji",2014,800
+"253","Fiji",2016,76000
+"254","Finland",2008,20
+"255","Finland",2013,30
+"256","Fragile and conflict affected situations",2008,2731235
+"257","Fragile and conflict affected situations",2010,2166900
+"258","Fragile and conflict affected situations",2013,1097344
+"259","Fragile and conflict affected situations",2014,581790
+"260","Fragile and conflict affected situations",2015,2082320
+"261","Fragile and conflict affected situations",2016,1117730
+"262","France",2008,870
+"263","France",2010,4500
+"264","France",2013,6700
+"265","France",2014,4100
+"266","France",2015,120
+"267","France",2016,190
+"268","French Polynesia",2010,3500
+"269","Gabon",2009,800
+"270","Gabon",2012,1600
+"271","Gabon",2013,1800
+"272","Georgia",2013,1500
+"273","Georgia",2014,120
+"274","Georgia",2015,1200
+"275","Germany",2013,53000
+"276","Germany",2016,2000
+"277","Ghana",2008,14000
+"278","Ghana",2009,52000
+"279","Ghana",2011,49000
+"280","Ghana",2013,31000
+"281","Ghana",2015,9300
+"282","Ghana",2016,7900
+"283","Greece",2009,330
+"284","Greece",2013,60
+"285","Greece",2014,8200
+"286","Greece",2015,270
+"287","Greece",2016,2900
+"288","Guatemala",2008,18000
+"289","Guatemala",2009,990
+"290","Guatemala",2010,163000
+"291","Guatemala",2011,29000
+"292","Guatemala",2012,64000
+"293","Guatemala",2013,80
+"294","Guatemala",2014,10000
+"295","Guatemala",2015,2900
+"296","Guatemala",2016,1700
+"297","Guinea",2011,4500
+"298","Guinea",2013,300
+"299","Guinea",2015,34000
+"300","Guinea",2016,490
+"301","Guinea-Bissau",2008,750
+"302","Guinea-Bissau",2010,2000
+"303","Haiti",2008,139000
+"304","Haiti",2009,9900
+"305","Haiti",2010,1573000
+"306","Haiti",2011,500
+"307","Haiti",2012,86000
+"308","Haiti",2013,1100
+"309","Haiti",2014,6500
+"310","Haiti",2015,1500
+"311","Haiti",2016,180000
+"312","Heavily indebted poor countries (HIPC)",2008,964450
+"313","Heavily indebted poor countries (HIPC)",2010,2790350
+"314","Heavily indebted poor countries (HIPC)",2012,1723320
+"315","Heavily indebted poor countries (HIPC)",2013,1117058
+"316","Heavily indebted poor countries (HIPC)",2014,748890
+"317","Heavily indebted poor countries (HIPC)",2015,966625
+"318","Heavily indebted poor countries (HIPC)",2016,1138740
+"319","High income",2013,1121892
+"320","High income",2014,1818668
+"321","High income",2015,1720220
+"322","High income",2016,2286100
+"323","Honduras",2008,70000
+"324","Honduras",2009,2300
+"325","Honduras",2010,8000
+"326","Honduras",2011,12000
+"327","Honduras",2014,2500
+"328","Honduras",2015,2000
+"329","Honduras",2016,890
+"330","Hungary",2013,1300
+"331","Hungary",2014,290
+"332","IBRD only",2008,29761740
+"333","IBRD only",2009,14040340
+"334","IBRD only",2010,27140100
+"335","IBRD only",2011,12680700
+"336","IBRD only",2012,19572530
+"337","IBRD only",2013,17381440
+"338","IBRD only",2014,15976053
+"339","IBRD only",2015,11401892
+"340","IBRD only",2016,18301121
+"341","IDA & IBRD total",2008,33485175
+"342","IDA & IBRD total",2009,16615270
+"343","IDA & IBRD total",2010,42227450
+"344","IDA & IBRD total",2011,14013796
+"345","IDA & IBRD total",2012,30510650
+"346","IDA & IBRD total",2013,20926808
+"347","IDA & IBRD total",2014,18342229
+"348","IDA & IBRD total",2015,18560807
+"349","IDA & IBRD total",2016,20782203
+"350","IDA blend",2009,339000
+"351","IDA blend",2010,11677100
+"352","IDA blend",2011,325396
+"353","IDA blend",2012,8172000
+"354","IDA blend",2013,762864
+"355","IDA blend",2014,827700
+"356","IDA blend",2015,1220820
+"357","IDA blend",2016,133880
+"358","IDA only",2008,3548235
+"359","IDA only",2009,2235930
+"360","IDA only",2010,3410250
+"361","IDA only",2011,1007700
+"362","IDA only",2012,2766120
+"363","IDA only",2013,2782504
+"364","IDA only",2014,1538476
+"365","IDA only",2015,5938095
+"366","IDA only",2016,2347202
+"367","IDA total",2008,3723435
+"368","IDA total",2009,2574930
+"369","IDA total",2010,15087350
+"370","IDA total",2011,1333096
+"371","IDA total",2012,10938120
+"372","IDA total",2013,3545368
+"373","IDA total",2014,2366176
+"374","IDA total",2015,7158915
+"375","IDA total",2016,2481082
+"376","India",2008,6662000
+"377","India",2009,5304000
+"378","India",2010,1411000
+"379","India",2011,1503000
+"380","India",2012,9110000
+"381","India",2013,2145000
+"382","India",2014,3428000
+"383","India",2015,3655000
+"384","India",2016,2400000
+"385","Indonesia",2008,221000
+"386","Indonesia",2009,854000
+"387","Indonesia",2010,409000
+"388","Indonesia",2011,7400
+"389","Indonesia",2012,104000
+"390","Indonesia",2013,427000
+"391","Indonesia",2014,943000
+"392","Indonesia",2015,204000
+"393","Indonesia",2016,1246000
+"394","Iraq",2008,600
+"395","Iraq",2011,2000
+"396","Iraq",2013,7900
+"397","Iraq",2015,23000
+"398","Ireland",2015,1600
+"399","Israel",2013,200
+"400","Israel",2014,700
+"401","Israel",2016,75000
+"402","Italy",2009,75000
+"403","Italy",2012,17000
+"404","Italy",2013,3700
+"405","Italy",2014,1600
+"406","Italy",2015,1300
+"407","Italy",2016,31000
+"408","Jamaica",2008,1500
+"409","Jamaica",2012,2000
+"410","Jamaica",2016,3500
+"411","Japan",2008,800
+"412","Japan",2010,85000
+"413","Japan",2011,892000
+"414","Japan",2012,308000
+"415","Japan",2013,639000
+"416","Japan",2014,707000
+"417","Japan",2015,486000
+"418","Japan",2016,864000
+"419","Jordan",2013,420
+"420","Kazakhstan",2010,5000
+"421","Kazakhstan",2011,9000
+"422","Kazakhstan",2012,5100
+"423","Kazakhstan",2013,330
+"424","Kazakhstan",2015,19000
+"425","Kazakhstan",2016,1000
+"426","Kenya",2008,10000
+"427","Kenya",2009,92000
+"428","Kenya",2010,54000
+"429","Kenya",2011,19000
+"430","Kenya",2012,98000
+"431","Kenya",2013,180000
+"432","Kenya",2014,1400
+"433","Kenya",2015,105000
+"434","Kenya",2016,40000
+"435","Kiribati",2008,85
+"436","Kiribati",2015,2500
+"437","Kosovo",2013,1000
+"438","Kosovo",2016,10
+"439","Late-demographic dividend",2008,19944300
+"440","Late-demographic dividend",2009,5219550
+"441","Late-demographic dividend",2010,22958500
+"442","Late-demographic dividend",2011,7436600
+"443","Late-demographic dividend",2012,6351180
+"444","Late-demographic dividend",2013,7561720
+"445","Late-demographic dividend",2014,5337102
+"446","Late-demographic dividend",2015,4884440
+"447","Late-demographic dividend",2016,8402308
+"448","Latin America & Caribbean",2008,1776560
+"449","Latin America & Caribbean",2009,985020
+"450","Latin America & Caribbean",2010,8163600
+"451","Latin America & Caribbean",2011,1014396
+"452","Latin America & Caribbean",2012,873000
+"453","Latin America & Caribbean",2013,354082
+"454","Latin America & Caribbean",2014,1550762
+"455","Latin America & Caribbean",2015,1543360
+"456","Latin America & Caribbean",2016,1763910
+"457","Latin America & Caribbean (excluding high income)",2008,1731655
+"458","Latin America & Caribbean (excluding high income)",2009,984320
+"459","Latin America & Caribbean (excluding high income)",2010,6163600
+"460","Latin America & Caribbean (excluding high income)",2011,1010396
+"461","Latin America & Caribbean (excluding high income)",2012,860300
+"462","Latin America & Caribbean (excluding high income)",2013,340853
+"463","Latin America & Caribbean (excluding high income)",2014,528542
+"464","Latin America & Caribbean (excluding high income)",2015,433460
+"465","Latin America & Caribbean (excluding high income)",2016,1719170
+"466","Least developed countries: UN classification",2008,3443535
+"467","Least developed countries: UN classification",2009,2252330
+"468","Least developed countries: UN classification",2010,3418250
+"469","Least developed countries: UN classification",2011,1163700
+"470","Least developed countries: UN classification",2012,2758020
+"471","Least developed countries: UN classification",2013,2753389
+"472","Least developed countries: UN classification",2014,1489430
+"473","Least developed countries: UN classification",2015,5906935
+"474","Least developed countries: UN classification",2016,2334010
+"475","Lebanon",2014,1300
+"476","Lebanon",2015,110
+"477","Lesotho",2010,5000
+"478","Lesotho",2011,3400
+"479","Lesotho",2014,2600
+"480","Liberia",2008,1000
+"481","Liberia",2014,650
+"482","Liberia",2016,10000
+"483","Libya",2013,3000
+"484","Low & middle income",2008,34455490
+"485","Low & middle income",2009,16614570
+"486","Low & middle income",2010,40225950
+"487","Low & middle income",2011,14034796
+"488","Low & middle income",2012,31083000
+"489","Low & middle income",2013,21003979
+"490","Low & middle income",2014,17302202
+"491","Low & middle income",2015,17470707
+"492","Low & middle income",2016,21927593
+"493","Low income",2008,1079650
+"494","Low income",2010,2624200
+"495","Low income",2012,2179320
+"496","Low income",2013,1041680
+"497","Low income",2014,512150
+"498","Low income",2015,3662700
+"499","Low income",2016,1167750
+"500","Lower middle income",2008,12964280
+"501","Lower middle income",2009,10857430
+"502","Lower middle income",2010,16106550
+"503","Lower middle income",2011,6338500
+"504","Lower middle income",2012,22216880
+"505","Lower middle income",2013,13562759
+"506","Lower middle income",2014,12417682
+"507","Lower middle income",2015,9680755
+"508","Lower middle income",2016,11601739
+"509","Madagascar",2008,194000
+"510","Madagascar",2009,8100
+"511","Madagascar",2010,38000
+"512","Madagascar",2011,26000
+"513","Madagascar",2012,268000
+"514","Madagascar",2013,20000
+"515","Madagascar",2014,2800
+"516","Madagascar",2015,87000
+"517","Madagascar",2016,51000
+"518","Malawi",2009,21000
+"519","Malawi",2011,25000
+"520","Malawi",2012,6200
+"521","Malawi",2013,33000
+"522","Malawi",2014,600
+"523","Malawi",2015,343000
+"524","Malawi",2016,9500
+"525","Malaysia",2008,4000
+"526","Malaysia",2010,65000
+"527","Malaysia",2011,24000
+"528","Malaysia",2012,22000
+"529","Malaysia",2013,43000
+"530","Malaysia",2014,256000
+"531","Malaysia",2015,21000
+"532","Malaysia",2016,18000
+"533","Mali",2008,2500
+"534","Mali",2010,5800
+"535","Mali",2011,18000
+"536","Mali",2012,9000
+"537","Mali",2013,24000
+"538","Mali",2015,400
+"539","Mali",2016,8000
+"540","Marshall Islands",2008,600
+"541","Marshall Islands",2014,1200
+"542","Mauritania",2010,5000
+"543","Mauritania",2013,4600
+"544","Mauritius",2015,1400
+"545","Mauritius",2016,300
+"546","Mexico",2008,13000
+"547","Mexico",2009,375000
+"548","Mexico",2010,900000
+"549","Mexico",2011,547000
+"550","Mexico",2012,6500
+"551","Mexico",2013,158000
+"552","Mexico",2014,18000
+"553","Mexico",2015,91000
+"554","Mexico",2016,12000
+"555","Middle East & North Africa",2014,22900
+"556","Middle East & North Africa",2015,140730
+"557","Middle East & North Africa (excluding high income)",2014,22200
+"558","Middle East & North Africa (excluding high income)",2015,140730
+"559","Middle income",2008,33375840
+"560","Middle income",2009,16030740
+"561","Middle income",2010,37601750
+"562","Middle income",2011,13792896
+"563","Middle income",2012,28903680
+"564","Middle income",2013,19962299
+"565","Middle income",2014,16790052
+"566","Middle income",2015,13808007
+"567","Middle income",2016,20759843
+"568","Moldova",2008,200
+"569","Mongolia",2009,22000
+"570","Mongolia",2015,810
+"571","Montenegro",2010,1400
+"572","Montenegro",2012,800
+"573","Montenegro",2016,400
+"574","Morocco",2008,5000
+"575","Morocco",2010,15000
+"576","Morocco",2012,580
+"577","Morocco",2014,1700
+"578","Mozambique",2008,143000
+"579","Mozambique",2009,7300
+"580","Mozambique",2010,130000
+"581","Mozambique",2011,22000
+"582","Mozambique",2012,10000
+"583","Mozambique",2013,186000
+"584","Mozambique",2014,21000
+"585","Mozambique",2015,61000
+"586","Mozambique",2016,7000
+"587","Myanmar",2008,2250000
+"588","Myanmar",2009,2500
+"589","Myanmar",2010,106000
+"590","Myanmar",2011,13000
+"591","Myanmar",2012,74000
+"592","Myanmar",2013,223000
+"593","Myanmar",2014,81000
+"594","Myanmar",2015,1618000
+"595","Myanmar",2016,509000
+"596","Namibia",2009,55000
+"597","Namibia",2010,11000
+"598","Namibia",2011,60000
+"599","Namibia",2012,400
+"600","Namibia",2013,18000
+"601","Namibia",2014,160
+"602","Namibia",2015,8
+"603","Nepal",2008,250000
+"604","Nepal",2009,18000
+"605","Nepal",2011,46000
+"606","Nepal",2012,600
+"607","Nepal",2013,12000
+"608","Nepal",2014,74000
+"609","Nepal",2015,2623000
+"610","Nepal",2016,31000
+"611","New Zealand",2010,250
+"612","New Zealand",2011,2300
+"613","New Zealand",2012,450
+"614","New Zealand",2013,210
+"615","New Zealand",2015,440
+"616","New Zealand",2016,1800
+"617","Nicaragua",2008,19000
+"618","Nicaragua",2010,61000
+"619","Nicaragua",2011,10000
+"620","Nicaragua",2013,160
+"621","Nicaragua",2014,35000
+"622","Nicaragua",2015,1100
+"623","Nicaragua",2016,18000
+"624","Niger",2008,4300
+"625","Niger",2009,5600
+"626","Niger",2010,205000
+"627","Niger",2011,28000
+"628","Niger",2012,540000
+"629","Niger",2013,201000
+"630","Niger",2014,47000
+"631","Niger",2015,38000
+"632","Niger",2016,46000
+"633","Nigeria",2009,140000
+"634","Nigeria",2010,560000
+"635","Nigeria",2011,6300
+"636","Nigeria",2012,6112000
+"637","Nigeria",2013,117000
+"638","Nigeria",2014,3000
+"639","Nigeria",2015,100000
+"640","Nigeria",2016,78000
+"641","North America",2008,2022000
+"642","North America",2009,1300
+"643","North America",2011,52000
+"644","North America",2012,901000
+"645","North America",2013,308000
+"646","North America",2014,39800
+"647","North America",2015,76000
+"648","North America",2016,1200000
+"649","Norway",2014,680
+"650","Norway",2015,220
+"651","Norway",2016,260
+"652","OECD members",2013,1240613
+"653","OECD members",2014,1772470
+"654","OECD members",2015,1721820
+"655","OECD members",2016,2224000
+"656","Oman",2013,350
+"657","Pacific island small states",2012,36950
+"658","Pacific island small states",2014,16736
+"659","Pacific island small states",2016,80363
+"660","Pakistan",2008,89000
+"661","Pakistan",2009,84000
+"662","Pakistan",2010,11060000
+"663","Pakistan",2011,300000
+"664","Pakistan",2012,1857000
+"665","Pakistan",2013,407000
+"666","Pakistan",2014,771000
+"667","Pakistan",2015,1002000
+"668","Pakistan",2016,13000
+"669","Palau",2012,150
+"670","Palau",2013,1500
+"671","Panama",2012,3400
+"672","Panama",2013,1700
+"673","Panama",2014,320
+"674","Panama",2015,100
+"675","Panama",2016,1100
+"676","Papua New Guinea",2008,75000
+"677","Papua New Guinea",2009,1000
+"678","Papua New Guinea",2012,75000
+"679","Papua New Guinea",2013,46
+"680","Papua New Guinea",2014,21000
+"681","Papua New Guinea",2016,1600
+"682","Paraguay",2008,60
+"683","Paraguay",2013,28000
+"684","Paraguay",2014,84000
+"685","Paraguay",2015,171000
+"686","Paraguay",2016,3600
+"687","Peru",2008,45000
+"688","Peru",2009,46000
+"689","Peru",2010,10000
+"690","Peru",2011,2700
+"691","Peru",2012,184000
+"692","Peru",2013,28000
+"693","Peru",2014,950
+"694","Peru",2015,8400
+"695","Peru",2016,17000
+"696","Philippines",2008,2757000
+"697","Philippines",2009,2062000
+"698","Philippines",2010,1002000
+"699","Philippines",2011,2499000
+"700","Philippines",2012,3859000
+"701","Philippines",2013,7022000
+"702","Philippines",2014,5787000
+"703","Philippines",2015,2221000
+"704","Philippines",2016,5930000
+"705","Poland",2010,30000
+"706","Portugal",2008,38
+"707","Portugal",2015,10
+"708","Portugal",2016,1100
+"709","Post-demographic dividend",2013,1079413
+"710","Post-demographic dividend",2014,879590
+"711","Post-demographic dividend",2015,584860
+"712","Post-demographic dividend",2016,3200264
+"713","Pre-demographic dividend",2009,1017930
+"714","Pre-demographic dividend",2010,1725450
+"715","Pre-demographic dividend",2011,441800
+"716","Pre-demographic dividend",2012,8161520
+"717","Pre-demographic dividend",2013,1442798
+"718","Pre-demographic dividend",2014,584590
+"719","Pre-demographic dividend",2015,1084635
+"720","Pre-demographic dividend",2016,705360
+"721","Romania",2008,11000
+"722","Romania",2014,2200
+"723","Romania",2015,160
+"724","Romania",2016,1500
+"725","Rwanda",2008,5000
+"726","Rwanda",2010,5900
+"727","Rwanda",2011,1900
+"728","Rwanda",2012,3200
+"729","Rwanda",2013,1000
+"730","Rwanda",2015,2000
+"731","Rwanda",2016,9700
+"732","Samoa",2009,5300
+"733","Samoa",2012,7700
+"734","Samoa",2014,86
+"735","Samoa",2015,970
+"736","Samoa",2016,63
+"737","Saudi Arabia",2009,10000
+"738","Saudi Arabia",2013,4700
+"739","Saudi Arabia",2016,280
+"740","Senegal",2009,264000
+"741","Senegal",2010,7800
+"742","Senegal",2011,1600
+"743","Senegal",2012,20000
+"744","Senegal",2013,13000
+"745","Senegal",2016,24000
+"746","Serbia",2010,4500
+"747","Serbia",2013,190
+"748","Serbia",2014,33000
+"749","Serbia",2016,39
+"750","Seychelles",2013,1100
+"751","Seychelles",2014,7
+"752","Seychelles",2016,20
+"753","Sierra Leone",2013,8400
+"754","Solomon Islands",2010,7900
+"755","Solomon Islands",2012,1000
+"756","Solomon Islands",2013,3500
+"757","Solomon Islands",2014,9000
+"758","Solomon Islands",2015,1000
+"759","Solomon Islands",2016,1300
+"760","Somalia",2008,12000
+"761","Somalia",2010,5200
+"762","Somalia",2012,28000
+"763","Somalia",2013,60000
+"764","Somalia",2014,36000
+"765","Somalia",2015,59000
+"766","Somalia",2016,70000
+"767","South Africa",2008,3500
+"768","South Africa",2009,20000
+"769","South Africa",2010,6000
+"770","South Africa",2011,52000
+"771","South Africa",2012,2000
+"772","South Africa",2013,18000
+"773","South Africa",2014,3500
+"774","South Africa",2015,14
+"775","South Africa",2016,12000
+"776","South Asia",2008,7590400
+"777","South Asia",2009,7139000
+"778","South Asia",2010,13252000
+"779","South Asia",2011,2957000
+"780","South Asia",2012,11777600
+"781","South Asia",2013,4063000
+"782","South Asia",2014,4981000
+"783","South Asia",2015,7950900
+"784","South Asia",2016,3566090
+"785","South Asia (IDA & IBRD)",2008,7590400
+"786","South Asia (IDA & IBRD)",2009,7139000
+"787","South Asia (IDA & IBRD)",2010,13252000
+"788","South Asia (IDA & IBRD)",2011,2957000
+"789","South Asia (IDA & IBRD)",2012,11777600
+"790","South Asia (IDA & IBRD)",2013,4063000
+"791","South Asia (IDA & IBRD)",2014,4981000
+"792","South Asia (IDA & IBRD)",2015,7950900
+"793","South Asia (IDA & IBRD)",2016,3566090
+"794","South Sudan",2012,340000
+"795","South Sudan",2013,116000
+"796","South Sudan",2014,112000
+"797","South Sudan",2015,15000
+"798","Spain",2011,15000
+"799","Spain",2012,22000
+"800","Spain",2013,2600
+"801","Spain",2014,3800
+"802","Spain",2015,4100
+"803","Spain",2016,5400
+"804","Sri Lanka",2008,525000
+"805","Sri Lanka",2009,363000
+"806","Sri Lanka",2010,141000
+"807","Sri Lanka",2011,685000
+"808","Sri Lanka",2012,129000
+"809","Sri Lanka",2013,324000
+"810","Sri Lanka",2014,152000
+"811","Sri Lanka",2015,66000
+"812","Sri Lanka",2016,500000
+"813","Sub-Saharan Africa",2009,1118600
+"814","Sub-Saharan Africa",2010,1692350
+"815","Sub-Saharan Africa",2011,603100
+"816","Sub-Saharan Africa",2012,8158720
+"817","Sub-Saharan Africa",2013,1595698
+"818","Sub-Saharan Africa",2014,652057
+"819","Sub-Saharan Africa",2015,1108287
+"820","Sub-Saharan Africa",2016,1075470
+"821","Sub-Saharan Africa (excluding high income)",2009,1118600
+"822","Sub-Saharan Africa (excluding high income)",2010,1692350
+"823","Sub-Saharan Africa (excluding high income)",2011,603100
+"824","Sub-Saharan Africa (excluding high income)",2012,8158720
+"825","Sub-Saharan Africa (excluding high income)",2013,1594598
+"826","Sub-Saharan Africa (excluding high income)",2014,652050
+"827","Sub-Saharan Africa (excluding high income)",2015,1108287
+"828","Sub-Saharan Africa (excluding high income)",2016,1075450
+"829","Sudan",2008,47000
+"830","Sudan",2009,80000
+"831","Sudan",2010,20000
+"832","Sudan",2011,19000
+"833","Sudan",2012,84000
+"834","Sudan",2013,284000
+"835","Sudan",2014,187000
+"836","Sudan",2015,8300
+"837","Sudan",2016,123000
+"838","Suriname",2013,300
+"839","Sweden",2014,1000
+"840","Sweden",2015,100
+"841","Switzerland",2013,13
+"842","Switzerland",2015,360
+"843","Syrian Arab Republic",2014,2300
+"844","Tajikistan",2010,2000
+"845","Tajikistan",2012,6400
+"846","Tajikistan",2013,660
+"847","Tajikistan",2014,460
+"848","Tajikistan",2015,11000
+"849","Tajikistan",2016,2400
+"850","Tanzania",2008,2400
+"851","Tanzania",2009,11000
+"852","Tanzania",2011,22000
+"853","Tanzania",2012,10000
+"854","Tanzania",2014,14000
+"855","Tanzania",2015,3500
+"856","Tanzania",2016,36000
+"857","Thailand",2008,203000
+"858","Thailand",2009,68000
+"859","Thailand",2010,1000000
+"860","Thailand",2011,1645000
+"861","Thailand",2012,3400
+"862","Thailand",2013,13000
+"863","Thailand",2014,27000
+"864","Thailand",2015,240
+"865","Thailand",2016,90000
+"866","Togo",2008,2000
+"867","Togo",2010,50000
+"868","Togo",2013,120
+"869","Togo",2015,5000
+"870","Tonga",2012,400
+"871","Tonga",2013,17
+"872","Tonga",2014,5300
+"873","Tonga",2016,3000
+"874","Trinidad and Tobago",2013,29
+"875","Tunisia",2013,6
+"876","Tunisia",2015,120
+"877","Turkey",2008,300
+"878","Turkey",2009,20000
+"879","Turkey",2010,200
+"880","Turkey",2011,252000
+"881","Turkey",2014,480
+"882","Turkey",2015,1500
+"883","Turkey",2016,200
+"884","Turks and Caicos Islands",2016,50
+"885","Tuvalu",2015,5400
+"886","Uganda",2008,15000
+"887","Uganda",2011,6400
+"888","Uganda",2012,220
+"889","Uganda",2013,30000
+"890","Uganda",2014,50000
+"891","Uganda",2015,600
+"892","Uganda",2016,2500
+"893","Ukraine",2008,25000
+"894","Ukraine",2013,600
+"895","Ukraine",2016,130
+"896","United Kingdom",2012,300
+"897","United Kingdom",2013,20000
+"898","United Kingdom",2014,620
+"899","United Kingdom",2015,6100
+"900","United Kingdom",2016,1200
+"901","United States",2008,2020000
+"902","United States",2009,1300
+"903","United States",2011,52000
+"904","United States",2012,901000
+"905","United States",2013,188000
+"906","United States",2014,34000
+"907","United States",2015,63000
+"908","United States",2016,1107000
+"909","Upper middle income",2008,20411560
+"910","Upper middle income",2009,5173310
+"911","Upper middle income",2010,21495200
+"912","Upper middle income",2011,7454396
+"913","Upper middle income",2012,6686800
+"914","Upper middle income",2013,6399540
+"915","Upper middle income",2014,4372370
+"916","Upper middle income",2015,4127252
+"917","Upper middle income",2016,9158104
+"918","Uruguay",2013,1000
+"919","Uruguay",2014,4900
+"920","Uruguay",2015,24000
+"921","Uruguay",2016,12000
+"922","Vanuatu",2011,400
+"923","Vanuatu",2012,700
+"924","Vanuatu",2013,69
+"925","Vanuatu",2014,350
+"926","Vanuatu",2015,65000
+"927","Vietnam",2008,106000
+"928","Vietnam",2009,187000
+"929","Vietnam",2010,442000
+"930","Vietnam",2011,230000
+"931","Vietnam",2012,15000
+"932","Vietnam",2013,1040000
+"933","Vietnam",2014,68000
+"934","Vietnam",2015,9600
+"935","Vietnam",2016,81000
+"936","World",2008,36525123
+"937","World",2009,16734400
+"938","World",2010,42350200
+"939","World",2011,15015596
+"940","World",2012,32366600
+"941","World",2013,22125871
+"942","World",2014,19120870
+"943","World",2015,19190927
+"944","World",2016,24213693
+"945","Zambia",2008,5800
+"946","Zambia",2009,54000
+"947","Zambia",2010,150
+"948","Zambia",2013,5500
+"949","Zambia",2014,26000
+"950","Zambia",2015,25
+"951","Zimbabwe",2013,44000
+"952","Zimbabwe",2014,23000
+"953","Zimbabwe",2015,800
+"954","Zimbabwe",2016,400

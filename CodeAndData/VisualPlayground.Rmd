@@ -1,0 +1,362 @@
+---
+title: "VisualPlayground"
+author: "Nau, Gregory"
+date: "April 11, 2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE, echo=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+setwd("C:/Users/Jay/Documents/Sophomore Year Northeastern University/DS 4100/Final Project/Online Datasets")
+myCleanRead <- function(x) {
+  str <- paste( x, ".csv", sep = '')
+print (str)
+  return(select(read.csv(paste( x, ".csv", sep = '')), -X))
+}
+
+suicideRates <- myCleanRead('suicide_rates_with_gdp_clean')
+# converts decimal to percent
+suicideRates$total_suicide_rate <- suicideRates$total_suicide_rate * 100
+suicideRates$male_suicide_rate <- suicideRates$male_suicide_rate * 100
+suicideRates$female_suicide_rate <- suicideRates$female_suicide_rate * 100
+
+parents <- myCleanRead('Parents')
+marriage <- myCleanRead('Marriage')
+hdi <- myCleanRead('HDI')
+perFamDemo <- myCleanRead('PerFamDemo')
+mental <- myCleanRead('Mental')
+popGrowth <- myCleanRead('population_growth_clean')
+averageHouseSize <- myCleanRead('AverageHouseSize')
+perMember <- myCleanRead('PerFamilyMember')
+
+rm(myCleanRead)
+```
+
+Looking at the following plot shows that suicide does increase when single parenthood increased, although not by too much
+
+```{r ChildrenAged0-17LivingWithASingleParentSuicideRate, echo=FALSE}
+ggplot(data = inner_join(parents, suicideRates), aes(x = SingleParent)) +
+  geom_smooth(method = 'lm', aes(y=total_suicide_rate, color = "Total")) +
+  geom_smooth(method = 'lm', aes(y=female_suicide_rate, color = "Female")) +
+  geom_smooth(method = 'lm', aes(y=male_suicide_rate, color = "Male")) +
+  geom_point(aes(y=total_suicide_rate, color = "Total")) +
+  geom_point(aes(y=female_suicide_rate, color = "Female")) +
+  geom_point(aes(y=male_suicide_rate, color = "Male")) +
+  labs(title = "Children Aged 0-17 Living With a Single Parent Suicide Rate", 
+       x = "Children With Single Parent (%)", y = "Suicide Rate (%)") + 
+  scale_color_manual(name = "",
+                     breaks = c("Total", "Male", "Female"),
+                     values = c("Total"="black", "Male"="blue", "Female"="red"))
+```
+
+
+Looking at the following plot shows that rates of living alone have a steady rate on increasing male suicide rate, but not much for female suicide
+
+```{r LivingAlonesEffectOnSuicideRates, echo=FALSE}
+ggplot(data = inner_join(perFamDemo, suicideRates), aes(x=X.Alone.Unloved)) +
+  geom_smooth(method = 'lm', aes(y=total_suicide_rate, color = "Total")) +
+  geom_smooth(method = 'lm', aes(y=female_suicide_rate, color = "Female")) +
+  geom_smooth(method = 'lm', aes(y=male_suicide_rate, color="Male")) +
+  geom_point(aes(y=total_suicide_rate, color = "Total")) +
+  geom_point(aes(y=female_suicide_rate, color = "Female")) +
+  geom_point(aes(y=male_suicide_rate, color = "Male")) +
+  labs(title = "Living Alone's Effect on Suicide Rates",
+       x = "Alone and Unloved (%)", y = "Suicide Rate (%)") +
+  scale_color_manual(name = "",
+                     breaks = c("Total", "Male", "Female"),
+                     values = c("Total"="black", "Male"="blue", "Female"="red"))
+```
+
+
+Looking at the following plot shows that increased GDP per capita reduces suicide rates across the board, though once out of poverty, has almost no effect
+
+```{r GDPPerCapitaSuicideRates, echo=FALSE}
+ggplot(data = inner_join(suicideRates, hdi)) +
+  geom_point(aes(y=total_suicide_rate, x=gdp_per_capita...., color = Category)) +
+  geom_smooth(method = 'lm', aes(y=total_suicide_rate, x=gdp_per_capita...., color = Category)) +
+  labs(title = "GDP Per Capita's Effect on Suicide Rates",
+       x = "GDP Per Capita", y = "Suicide Rate (%)")
+```
+
+
+Looking at the following plot shows that suicide rates increase as countries develope, but not by a significant amount
+
+```{r HDI, echo=FALSE}
+ggplot(data = inner_join(suicideRates, hdi), aes(x=hdi, y=total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color = 'red') +
+  labs(title = "Human Development Index (HDI) by Suicide Rate",
+       x = "HDI", y = "Total Suicide Rate (%)")
+```
+
+
+Looking at the following plot shows that eating disorders have almost no correlation to suicide rates on either sex.
+
+```{r Eat, echo=FALSE}
+ggplot(data = inner_join(mental, suicideRates)) +
+  geom_point(aes(x=`X.Eat`, y=total_suicide_rate, color = 'Total')) +
+  geom_smooth(method = 'lm', aes(x=`X.Eat`, y=total_suicide_rate, color = 'Total')) +
+  geom_point(aes(x=`X.EatF`, y=female_suicide_rate, color = 'Female')) +
+  geom_smooth(method = 'lm', aes(x=`X.EatF`,y=female_suicide_rate, color = 'Female')) +
+  geom_point(aes(x=`X.EatM`, y=male_suicide_rate, color ='Male')) +
+  geom_smooth(method = 'lm', aes(x=`X.EatM`, y=male_suicide_rate, color = 'Male')) +
+  labs(title = "Eating Disorder's Effect on Suicide Rates",
+       x = "Percent of eating disorders by sex", y = "Percent population by sex commiting suicide") +
+  scale_color_manual(name = "",
+                     breaks = c("Total", "Male", "Female"),
+                     values = c("Total"="black", "Male"="blue", "Female"="red"))
+```
+
+
+
+Formal Visualizations
+
+Male vs Female Suicide Rates:
+This scatter plot displays the male suicide rate as a percentage of the male population and the female suicide rate as a percentage of the female population. The blue line is a line of best fit with a polynomial degree of 1. The red line is the 'y=x' line where the female suicide rate will equal the male suicide rate. As we can see, when suicide rates increase in males, they increase for for their female counter parts as well. However, suicide appears to be a primarily male problem. Very few countries have had at least one year where the female suicide rate is higher than the male, and all of them have had extremely low suicide rates in general. This chart suggests that most, if not all, suicide risk factors apply to both males and females, but that the magnitude of any risk factor will be felt more sevelerly by the male population.
+
+```{r SuicideBySex, echo = FALSE}
+theseSuicideRates <- suicideRates %>%
+  select(male_suicide_rate, female_suicide_rate)
+
+numOfObs <- theseSuicideRates %>%
+  count() %>%
+  as.character()
+
+ggplot(data = theseSuicideRates, aes(x=male_suicide_rate, y=female_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color = "blue", formula = y ~ poly(x, 1)) +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  labs(title = "Male vs Female Suicide Rates", subtitle = "By Country Year",
+       x = "Male Suicide Rate (Percent of Male Population)", y = "Female Suicide Rate (Percent of Female Population)",
+       caption = "Based on data from WHO's Suicide Dabase.") +
+  geom_text(data = data.frame(male_suicide_rate = 0.075, female_suicide_rate = 0.001), label = paste("Total Observations:", numOfObs)) +
+  annotate("text", label = "Line of Equal Rates", x = 0.019, y = 0.021, color = "red", angle = 60) +
+  annotate("text", label = "Line of Best Fit", x = 0.077, y = 0.02, color = "blue", angle = 21)
+
+rm(theseSuicideRates)
+rm(numOfObs)
+```
+
+
+Correlation of Divorce Rates and Suicide Rates:
+This faceted scatter plot displays the divorce rate as a percent of the population that is divorced, to the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. The facets divide the scatter plot into different levels of human development according to the Human Development Index. As we can see there is a strong trend that as divorce rates increase, suicide rates do as well. However, it is clear that this trend is much more pronounced in lesser developed countries. This may suggest that divorce is more normal in very high developed countries and that there are better societal structures in place to deter suicide in this instance. 
+
+```{r TotalSuicideDivorce, echo=FALSE}
+totalSuicideDivorce <- marriage %>%
+  inner_join(suicideRates) %>%
+  inner_join(hdi) %>%
+  select(Divorce, total_suicide_rate, Category) 
+
+totalSuicideDivorce$Category = factor(totalSuicideDivorce$Category, levels=c('Medium', 'High', 'Very High'))
+
+medium <- totalSuicideDivorce %>%
+  filter(Category == 'Medium') %>%
+  count() %>%
+  as.numeric()
+
+high <- totalSuicideDivorce %>%
+  filter(Category == 'High') %>%
+  count() %>%
+  as.numeric()
+
+veryHigh <- totalSuicideDivorce %>%
+  filter(Category == 'Very High') %>%
+  count() %>%
+  as.character()
+
+ggplot(data = totalSuicideDivorce, aes(x=Divorce, y=total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 2)) +
+  facet_grid(. ~Category) +
+  labs(title = "Correlation of Divorce Rates and Suicide Rates", subtitle = "Grouped by Human Development Index (HDI)",
+       x = "Divorce Rate (Percent of Population Divorced)",
+       y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database, OECD's Family Database, UNDR's Human Development Index.
+       Suicide rates include only sucessful attempts.
+       Medium Development is classified as greater than or equal to 0.55 HDI.
+       High Development is classified as greater than or equal to 0.7 HDI.
+       Very High Development is classified as greater than or equal to 0.8 HDI.") +
+  geom_text(data = data.frame(Divorce = 2.7, total_suicide_rate = 0.065, Category = 'Medium'), label = paste('Total Observations:', medium)) +
+  geom_text(data = data.frame(Divorce = 2.7, total_suicide_rate = 0.065, Category = 'High'), label = paste('Total Observations:', high)) +
+  geom_text(data = data.frame(Divorce = 2.7, total_suicide_rate = 0.065, Category = 'Very High'), label = paste('Total Observations:', veryHigh))
+
+rm(high)
+rm(medium)
+rm(veryHigh)
+rm(totalSuicideDivorce)
+```
+
+
+Correlation of Population Growth and Suicide Rate :
+This scatter plot displaces the anual percent of population growth with the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. This plot shows a strong trend that at low rates of population growth that higher rates deter suicide. Due to the majority of reporting countries being at very low population growths, the higher rates (higher than 7% population growth) were extremely under represented and were removed as outliers.
+
+```{r TotalSuicidePopGrowth, echo=FALSE}
+totalSuicidePopGrowth <- popGrowth %>%
+  inner_join(suicideRates) %>%
+  select(total_suicide_rate, population_growth) %>%
+  filter(population_growth <= 7) # outlier removal
+
+numOfObs <- totalSuicidePopGrowth %>%
+  count() %>%
+  as.character()
+
+ggplot(data = totalSuicidePopGrowth, aes(x=population_growth, y=total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 2)) +
+  geom_text(data = data.frame(population_growth = 5, total_suicide_rate = 0.042), label = paste("Total Observations:", numOfObs)) +
+  labs(title = "Correlation of Population Growth and Suicide Rate", subtitle = "By Country Year",
+       x = "Percent of Population Growth (Anual Percent)", y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database, The World Bank's Population Growth (Anual %).
+       Suicide rates include only sucessful attempts.")
+
+rm(totalSuicidePopGrowth)
+rm(numOfObs)
+```
+
+
+Correlation of Depression and Suicide Rates:
+This scatter plot displays the Depression rate as a percentage of the population with the suicide rate as a percentage of the population. The blue line is a line of best fit with a polynomial degree of 4. This plot shows a strong trend that as Depression rates increase, suicide rates do as well. However, this trend is not as strong as one would expect, and there are plenty of countries that appear to have a much higher suicide rate with even low depression rates. While these Depression rates were adjusted by OWID to account for underdiagnosis, this may suggest that the underdiagnosis is more extreme than they predicted. If not, then that would suggest that suicide and depression are not perfect proxies of each other, and that a sizable proportion of suicides are commited by people without Depression.
+
+```{r TotalSuicideDepression, echo=FALSE}
+totalSuicideSad <- inner_join(mental, suicideRates) %>%
+  select(total_suicide_rate, `X.Sad`) %>%
+  rename('Sad' = `X.Sad`)
+
+numOfPoints <- totalSuicideSad %>%
+  count() %>%
+  as.character()
+
+ggplot(data = totalSuicideSad, aes(x=Sad, y=total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 4)) +
+  labs(title = "Correlation of Depression and Suicide Rates", subtitle = "By Country Years",
+       x = "Depression Rate (Percent of Population)", y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database and OWID's Mental Health Article
+       Suicide rates include only sucessful attempts
+       Depression rates are approximated and were adjusted due to predicted underdiagnosis.") +
+  geom_text(data = data.frame(Sad = 3, total_suicide_rate = 0.047), label = paste('Total Observations:', numOfPoints))
+
+rm(numOfPoints)
+rm(totalSuicideSad)
+```
+
+
+Correlation of Two and Single Parent Households to Suicide Rates:
+These two plots display the percent of children in a two parent household, or a single parent household, respecifvely to the suicide rate as a  percent of the population. The blue line is a line of best fit with a polynomial degree of 3. These two plots appear to be mirror images of each other as they are measuring similiar things. However children can also be in foster care, homeless, no parent households (raised by siblings), and other situations, which are not included in either plot. Thus these two plots are not perfect inverses of each other. As you can see, there is a clear trend that suicide rates increase as rates of single parent households increases, and decreases as rates of two parent households decreases. This correlation appears to plateau in the middle. This is due to the countries in that area collecting data over a longer period of time, and thus having more points in the scatter plot. 
+
+```{r TotalSuicideTwoParent, echo=FALSE}
+totalSuicideTwoParent <- inner_join(parents, suicideRates) %>%
+  select(total_suicide_rate, TwoParents)
+
+numOfObs <- totalSuicideTwoParent %>%
+  count() %>%
+  as.character()
+
+ggplot(data = totalSuicideTwoParent, aes(x=TwoParents, y =total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 3)) +
+  geom_text(data = data.frame(TwoParents = 87, total_suicide_rate = 0.0365), label = paste('Total Observations:', numOfObs)) +
+  labs(title = "Correlation of Two Parent Households and Suicide Rates", subtitle = "By Country Years",
+       x = "Children in Two Parent Households (Percent of Children)", y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database and OECD's Family Database.
+       Suicide rates include only sucessful attempts.")
+
+rm(totalSuicideTwoParent)
+rm(numOfObs)
+```
+```{r TotalSuicideSingleParent, echo=FALSE}
+totalSuicideOneParent <- inner_join(parents, suicideRates) %>%
+  select(total_suicide_rate, SingleParent)
+
+numOfObs <- totalSuicideOneParent %>%
+  count() %>%
+  as.character()
+
+ggplot(data = totalSuicideOneParent, aes(x=SingleParent, y =total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 3)) +
+  geom_text(data = data.frame(SingleParent = 10, total_suicide_rate = 0.0365), label = paste('Total Observations:', numOfObs)) +
+  labs(title = "Correlation of Single Parent Households and Suicide Rates", subtitle = "By Country Years",
+       x = "Children in Single Parent Households (Percent of Children)", y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database and OECD's Family Database.
+       Suicide rates include only sucessful attempts.")
+
+rm(totalSuicideOneParent)
+rm(numOfObs)
+```
+
+
+Correlation of Average Houehold Size and Suicide Rates:
+This plot displaces a faceted scatter plot of the average household size (in number of people) and the suicide rate as a percent of the population. This scatter plot is faceted by female, male, and total suicide rates. The blue line is a line of best fit with a polynomial degree of 1. This shows a strong trend amongst people that living with others deters suicide. We had initiallly thought that males and females might display different preferences in this regard, but it appears that those preferences at least do not present themselves in the suicide rates.
+
+```{r SuicideBySexAverageHouseSize, echo=FALSE}
+suicideBySexAndAverageHouseSize <- inner_join(averageHouseSize, suicideRates) %>%
+  select(total_suicide_rate, male_suicide_rate, female_suicide_rate, AVGHouseSize) %>%
+  rename('Male' = male_suicide_rate) %>%
+  rename('Female' = female_suicide_rate) %>%
+  rename('Total' = total_suicide_rate) %>%
+  gather(Category, Suicide_Rate, c(Male, Female, Total))
+
+numOfObs <- suicideBySexAndAverageHouseSize %>%
+  count() %>%
+  as.character()
+
+ggplot(data = suicideBySexAndAverageHouseSize, aes(x=AVGHouseSize, y=Suicide_Rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 1)) +
+  facet_wrap(. ~Category) +
+  labs(title = "Correlation of Average Household Size and Suicide Rates", subtitle = paste("By Country Years [Total Observations: ", numOfObs, "]", sep = ''),
+       x = "Average Household Size", y = "Suicide Rate (Percent of Population by Sex)",
+       caption = "Based on data from WHO's Suicide Database and UN DESA's Population dataset.
+       Suicide rates includde only sucessful attempts.")
+
+rm(suicideBySexAndAverageHouseSize)
+rm(numOfObs)
+```
+
+
+Correlation of Single Households and Suicide Rates Plot:
+This plot displays a scatter plot of the percent of households consisting of a single person to the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. This shows a strong trend towards higher suicide rates as more people live alone. While we see the line start to dip at the highest rates of single person households, the amount of data in that area is small and the uncertainty of that dip is great. Thus, there is no reason then to believe that the suicide rate will not have a positive derivative (will increase) at all values of single person household rates. 
+
+```{r TotalSuicideSingleHousehold, echo=FALSE}
+totalSuicideSingleHouse <- inner_join(perMember, suicideRates) %>%
+  select(total_suicide_rate, `X.of1Member`) %>%
+  rename(OneMem = `X.of1Member`)
+
+numOfObs <- totalSuicideSingleHouse %>%
+  count %>%
+  as.character()
+
+ggplot(data = totalSuicideSingleHouse, aes(x=OneMem, y=total_suicide_rate)) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 2)) +
+  geom_text(data = data.frame(OneMem=10, total_suicide_rate=0.0425), label=paste('Total Observations:', numOfObs)) +
+  labs(title = "Correlation of Single Households and Suicide Rates", subtitle = "By Country Year",
+       x = "Single Person Household (Percent of Households)", y = "Suicide Rate (Percent of Population)",
+       caption = "Based on data from WHO's Suicide Database and UN DESA's Population dataset.
+       Suicide rates include only sucessful attempts.
+       A single person households is not necessarily an unmarried household.")
+
+rm(totalSuicideSingleHouse)
+rm(numOfObs)
+```
+
+
+
+```{r GlobalEnvironmentClean, echo=FALSE}
+rm(averageHouseSize)
+rm(hdi)
+rm(marriage)
+rm(mental)
+rm(parents)
+rm(perFamDemo)
+rm(perMember)
+rm(popGrowth)
+rm(suicideRates)
+```

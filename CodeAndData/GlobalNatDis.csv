@@ -1,0 +1,277 @@
+"","Entity","Year","Raw Death #","Death Rate"
+"1","All natural disasters",1985,54378,1.1206
+"2","All natural disasters",1986,7303,0.1478
+"3","All natural disasters",1987,18941,0.3763
+"4","All natural disasters",1988,42248,0.8241
+"5","All natural disasters",1989,10741,0.2058
+"6","All natural disasters",1990,50934,0.9593
+"7","All natural disasters",1991,159025,2.9458
+"8","All natural disasters",1992,12236,0.2231
+"9","All natural disasters",1993,21170,0.3801
+"10","All natural disasters",1994,13085,0.2315
+"11","All natural disasters",1995,22738,0.3965
+"12","All natural disasters",1996,14708,0.2529
+"13","All natural disasters",1997,19450,0.33
+"14","All natural disasters",1998,49741,0.8329
+"15","All natural disasters",1999,70593,1.167
+"16","All natural disasters",2000,9687,0.1581
+"17","All natural disasters",2001,30978,0.4993
+"18","All natural disasters",2002,12580,0.2002
+"19","All natural disasters",2003,110036,1.7299
+"20","All natural disasters",2004,241527,3.7505
+"21","All natural disasters",2005,89657,1.3752
+"22","All natural disasters",2006,23491,0.3559
+"23","All natural disasters",2007,16938,0.2535
+"24","All natural disasters",2008,235332,3.4793
+"25","All natural disasters",2009,11142,0.1627
+"26","All natural disasters",2010,317757,4.5854
+"27","All natural disasters",2011,30969,0.4416
+"28","All natural disasters",2012,9732,0.1371
+"29","All natural disasters",2013,21696,0.3021
+"30","All natural disasters",2014,7959,0.1095
+"31","All natural disasters",2015,22861,0.3096
+"32","All natural disasters",2016,8681,0.1163
+"33","Drought",1986,84,0.0017
+"34","Drought",1987,1317,0.0262
+"35","Drought",1988,1600,0.0312
+"36","Drought",1989,237,0.0045
+"37","Drought",1991,2000,0.037
+"38","Drought",1997,732,0.0124
+"39","Drought",1998,20,3e-04
+"40","Drought",1999,361,0.006
+"41","Drought",2000,80,0.0013
+"42","Drought",2001,99,0.0016
+"43","Drought",2002,588,0.0094
+"44","Drought",2003,9,1e-04
+"45","Drought",2004,80,0.0012
+"46","Drought",2005,149,0.0023
+"47","Drought",2006,134,0.002
+"48","Drought",2008,8,1e-04
+"49","Drought",2010,20000,0.2886
+"50","Drought",2015,35,5e-04
+"51","Earthquake",1985,9853,0.203
+"52","Earthquake",1986,1181,0.0239
+"53","Earthquake",1987,5160,0.1025
+"54","Earthquake",1988,27049,0.5276
+"55","Earthquake",1989,650,0.0125
+"56","Earthquake",1990,42853,0.8071
+"57","Earthquake",1991,2454,0.0455
+"58","Earthquake",1992,4033,0.0735
+"59","Earthquake",1993,10088,0.1811
+"60","Earthquake",1994,1242,0.022
+"61","Earthquake",1995,7739,0.1349
+"62","Earthquake",1996,576,0.0099
+"63","Earthquake",1997,3159,0.0536
+"64","Earthquake",1998,9573,0.1603
+"65","Earthquake",1999,21869,0.3615
+"66","Earthquake",2000,217,0.0035
+"67","Earthquake",2001,21348,0.3441
+"68","Earthquake",2002,1639,0.0261
+"69","Earthquake",2003,29617,0.4656
+"70","Earthquake",2004,227290,3.5294
+"71","Earthquake",2005,76241,1.1694
+"72","Earthquake",2006,6692,0.1014
+"73","Earthquake",2007,780,0.0117
+"74","Earthquake",2008,87918,1.2998
+"75","Earthquake",2009,1893,0.0276
+"76","Earthquake",2010,226733,3.2719
+"77","Earthquake",2011,20946,0.2987
+"78","Earthquake",2012,711,0.01
+"79","Earthquake",2013,1120,0.0156
+"80","Earthquake",2014,774,0.0107
+"81","Earthquake",2015,9550,0.1294
+"82","Earthquake",2016,1311,0.0176
+"83","Extreme temperature",1985,456,0.0094
+"84","Extreme temperature",1986,50,0.001
+"85","Extreme temperature",1987,1220,0.0242
+"86","Extreme temperature",1988,644,0.0126
+"87","Extreme temperature",1989,381,0.0073
+"88","Extreme temperature",1990,979,0.0184
+"89","Extreme temperature",1991,835,0.0155
+"90","Extreme temperature",1992,388,0.0071
+"91","Extreme temperature",1993,106,0.0019
+"92","Extreme temperature",1994,341,0.006
+"93","Extreme temperature",1995,1730,0.0302
+"94","Extreme temperature",1996,300,0.0052
+"95","Extreme temperature",1997,604,0.0102
+"96","Extreme temperature",1998,3269,0.0547
+"97","Extreme temperature",1999,771,0.0127
+"98","Extreme temperature",2000,941,0.0154
+"99","Extreme temperature",2001,1787,0.0288
+"100","Extreme temperature",2002,3369,0.0536
+"101","Extreme temperature",2003,74698,1.1744
+"102","Extreme temperature",2004,255,0.004
+"103","Extreme temperature",2005,1550,0.0238
+"104","Extreme temperature",2006,4826,0.0731
+"105","Extreme temperature",2007,1086,0.0163
+"106","Extreme temperature",2008,1688,0.025
+"107","Extreme temperature",2009,1386,0.0202
+"108","Extreme temperature",2010,57188,0.8253
+"109","Extreme temperature",2011,435,0.0062
+"110","Extreme temperature",2012,1834,0.0258
+"111","Extreme temperature",2013,1821,0.0254
+"112","Extreme temperature",2014,1168,0.0161
+"113","Extreme temperature",2015,7425,0.1006
+"114","Extreme temperature",2016,490,0.0066
+"115","Extreme weather",1985,17165,0.3537
+"116","Extreme weather",1986,1939,0.0392
+"117","Extreme weather",1987,2900,0.0576
+"118","Extreme weather",1988,3335,0.0651
+"119","Extreme weather",1989,4256,0.0815
+"120","Extreme weather",1990,4604,0.0867
+"121","Extreme weather",1991,146297,2.71
+"122","Extreme weather",1992,1342,0.0245
+"123","Extreme weather",1993,2965,0.0532
+"124","Extreme weather",1994,4239,0.075
+"125","Extreme weather",1995,3763,0.0656
+"126","Extreme weather",1996,4581,0.0788
+"127","Extreme weather",1997,6150,0.1043
+"128","Extreme weather",1998,24935,0.4175
+"129","Extreme weather",1999,12270,0.2028
+"130","Extreme weather",2000,1354,0.0221
+"131","Extreme weather",2001,1911,0.0308
+"132","Extreme weather",2002,1382,0.022
+"133","Extreme weather",2003,1049,0.0165
+"134","Extreme weather",2004,6547,0.1017
+"135","Extreme weather",2005,5251,0.0805
+"136","Extreme weather",2006,4329,0.0656
+"137","Extreme weather",2007,6035,0.0903
+"138","Extreme weather",2008,140985,2.0844
+"139","Extreme weather",2009,3287,0.048
+"140","Extreme weather",2010,1564,0.0226
+"141","Extreme weather",2011,3103,0.0442
+"142","Extreme weather",2012,3105,0.0437
+"143","Extreme weather",2013,8603,0.1198
+"144","Extreme weather",2014,1424,0.0196
+"145","Extreme weather",2015,1270,0.0172
+"146","Extreme weather",2016,1760,0.0236
+"147","Flood",1985,4376,0.0902
+"148","Flood",1986,1782,0.0361
+"149","Flood",1987,6766,0.1344
+"150","Flood",1988,8504,0.1659
+"151","Flood",1989,4716,0.0904
+"152","Flood",1990,2251,0.0424
+"153","Flood",1991,5852,0.1084
+"154","Flood",1992,5315,0.0969
+"155","Flood",1993,6150,0.1104
+"156","Flood",1994,6771,0.1198
+"157","Flood",1995,7956,0.1387
+"158","Flood",1996,8047,0.1384
+"159","Flood",1997,7685,0.1304
+"160","Flood",1998,10653,0.1784
+"161","Flood",1999,34807,0.5754
+"162","Flood",2000,6025,0.0983
+"163","Flood",2001,5014,0.0808
+"164","Flood",2002,4236,0.0674
+"165","Flood",2003,3910,0.0615
+"166","Flood",2004,6982,0.1084
+"167","Flood",2005,5754,0.0883
+"168","Flood",2006,5843,0.0885
+"169","Flood",2007,8607,0.1288
+"170","Flood",2008,4007,0.0592
+"171","Flood",2009,3627,0.053
+"172","Flood",2010,8356,0.1206
+"173","Flood",2011,6163,0.0879
+"174","Flood",2012,3544,0.0499
+"175","Flood",2013,9836,0.137
+"176","Flood",2014,3532,0.0486
+"177","Flood",2015,3495,0.0473
+"178","Flood",2016,4720,0.0632
+"179","Landslide",1985,377,0.0078
+"180","Landslide",1986,501,0.0101
+"181","Landslide",1987,1204,0.0239
+"182","Landslide",1988,952,0.0186
+"183","Landslide",1989,445,0.0085
+"184","Landslide",1990,98,0.0018
+"185","Landslide",1991,728,0.0135
+"186","Landslide",1992,712,0.013
+"187","Landslide",1993,1418,0.0255
+"188","Landslide",1994,307,0.0054
+"189","Landslide",1995,1521,0.0265
+"190","Landslide",1996,1155,0.0199
+"191","Landslide",1997,801,0.0136
+"192","Landslide",1998,1141,0.0191
+"193","Landslide",1999,445,0.0074
+"194","Landslide",2000,1012,0.0165
+"195","Landslide",2001,786,0.0127
+"196","Landslide",2002,1100,0.0175
+"197","Landslide",2003,706,0.0111
+"198","Landslide",2004,313,0.0049
+"199","Landslide",2005,664,0.0102
+"200","Landslide",2006,1638,0.0248
+"201","Landslide",2007,271,0.0041
+"202","Landslide",2008,504,0.0075
+"203","Landslide",2009,723,0.0106
+"204","Landslide",2010,3427,0.0495
+"205","Landslide",2011,309,0.0044
+"206","Landslide",2012,501,0.0071
+"207","Landslide",2013,235,0.0033
+"208","Landslide",2014,943,0.013
+"209","Landslide",2015,1006,0.0136
+"210","Landslide",2016,361,0.0048
+"211","Mass movement (dry)",1985,300,0.0062
+"212","Mass movement (dry)",1987,183,0.0036
+"213","Mass movement (dry)",1988,157,0.0031
+"214","Mass movement (dry)",1989,55,0.0011
+"215","Mass movement (dry)",1990,116,0.0022
+"216","Mass movement (dry)",1991,86,0.0016
+"217","Mass movement (dry)",1992,323,0.0059
+"218","Mass movement (dry)",1993,341,0.0061
+"219","Mass movement (dry)",2000,11,2e-04
+"220","Mass movement (dry)",2002,60,0.001
+"221","Mass movement (dry)",2004,44,7e-04
+"222","Mass movement (dry)",2006,11,2e-04
+"223","Mass movement (dry)",2008,120,0.0018
+"224","Mass movement (dry)",2009,36,5e-04
+"225","Mass movement (dry)",2012,16,2e-04
+"226","Mass movement (dry)",2013,46,6e-04
+"227","Mass movement (dry)",2015,13,2e-04
+"228","Volcanic activity",1985,21800,0.4492
+"229","Volcanic activity",1986,1746,0.0353
+"230","Volcanic activity",1988,7,1e-04
+"231","Volcanic activity",1990,33,6e-04
+"232","Volcanic activity",1991,683,0.0127
+"233","Volcanic activity",1992,1,0
+"234","Volcanic activity",1993,99,0.0018
+"235","Volcanic activity",1994,101,0.0018
+"236","Volcanic activity",1996,4,1e-04
+"237","Volcanic activity",1997,53,9e-04
+"238","Volcanic activity",2002,200,0.0032
+"239","Volcanic activity",2004,2,0
+"240","Volcanic activity",2005,3,0
+"241","Volcanic activity",2006,5,1e-04
+"242","Volcanic activity",2007,11,2e-04
+"243","Volcanic activity",2008,16,2e-04
+"244","Volcanic activity",2010,323,0.0047
+"245","Volcanic activity",2011,3,0
+"246","Volcanic activity",2014,102,0.0014
+"247","Wildfire",1985,51,0.0011
+"248","Wildfire",1986,20,4e-04
+"249","Wildfire",1987,191,0.0038
+"250","Wildfire",1989,1,0
+"251","Wildfire",1991,90,0.0017
+"252","Wildfire",1992,122,0.0022
+"253","Wildfire",1993,3,1e-04
+"254","Wildfire",1994,84,0.0015
+"255","Wildfire",1995,29,5e-04
+"256","Wildfire",1996,45,8e-04
+"257","Wildfire",1997,266,0.0045
+"258","Wildfire",1998,150,0.0025
+"259","Wildfire",1999,70,0.0012
+"260","Wildfire",2000,47,8e-04
+"261","Wildfire",2001,33,5e-04
+"262","Wildfire",2002,6,1e-04
+"263","Wildfire",2003,47,7e-04
+"264","Wildfire",2004,14,2e-04
+"265","Wildfire",2005,45,7e-04
+"266","Wildfire",2006,13,2e-04
+"267","Wildfire",2007,148,0.0022
+"268","Wildfire",2008,86,0.0013
+"269","Wildfire",2009,190,0.0028
+"270","Wildfire",2010,166,0.0024
+"271","Wildfire",2011,10,1e-04
+"272","Wildfire",2012,21,3e-04
+"273","Wildfire",2013,35,5e-04
+"274","Wildfire",2014,16,2e-04
+"275","Wildfire",2015,67,9e-04
+"276","Wildfire",2016,39,5e-04

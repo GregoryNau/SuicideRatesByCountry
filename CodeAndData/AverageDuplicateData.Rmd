@@ -1,0 +1,86 @@
+---
+title: "AverageDuplicateData"
+author: "Nau, Gregory"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+```{r AverageDuplicateData}
+averageDuplicateData <- function(data) {
+  
+  # get the structure of the return value
+  ans <- data[0,]
+  
+  # get a list of unique country values
+  countries <- unique(data$Country)
+  
+  # get the col names
+  columnNames <- colnames(data)
+  
+  # loop through each country
+  for (c in countries) {
+    
+    # get a data frame consisting of only one country
+    oneCountry <- data %>%
+      filter(Country == c)
+    
+    # get a list of unique year values
+    years <- unique(oneCountry$Year)
+    
+    # loop through each country-year
+    for (y in years) {
+      
+      # get a data frame consisting of only one country-year
+      oneYear <- oneCountry %>%
+        filter(Year == y)
+      
+      # Check for duplicate data
+      if (length(oneYear) != 1) {
+        numOneYear <- oneYear %>%
+          select(-Country, -Year) %>%
+          mutate_all(function(x) as.numeric(as.character(x)))
+        avg <- numOneYear %>%
+          colMeans(na.rm = TRUE)
+        oneYear <- oneYear %>%
+          select(Country, Year)
+        oneYear <- oneYear[1,]
+        for(i in 1:length(avg)) {
+          oneYear <- cbind(oneYear, avg[[i]])
+        }
+        rm(numOneYear)
+        rm(avg)
+      }
+      
+      # add the single row to the answer
+      ans <- rbind(ans, oneYear)
+      
+      # Garbage Collection
+      rm(oneYear)
+    }
+    
+    # Garbage Collection
+    rm(oneCountry)
+    rm(years)
+    rm(y)
+  }
+  
+  names(ans) <- columnNames
+  
+  # sort by Country then Year
+  ans <- ans %>%
+    arrange(Country, Year)
+  
+  # return ans
+  return(ans)
+  
+  # Garbage Collection
+  rm(ans)
+  rm(countries)
+  rm(c)
+}
+```

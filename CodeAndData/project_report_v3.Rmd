@@ -1,0 +1,1229 @@
+---
+title: "Final_Project"
+author: "Jay Sherman"
+date: "March 15, 2019"
+output: pdf_document
+---
+
+
+NOTE: These functions should be run before the code in this file is run:
+-cleancountry() (DataSets.Rmd)
+-removeTrailingNA() (removeTrailingNA.Rmd)
+
+NOTE: Code compiled in this file and in DataSets.Rmd wrote data tables that were cleaned and tidied in R into csv files. These csv files were included in the deliverable, but the code used to write them to csv files is still included, to show how we did it.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = "C:/Users/Jay/Documents/Sophomore Year Northeastern University/DS 4100/Final Project/Online Datasets")
+
+```
+
+```{r, set_up, warning = FALSE}
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(RSQLite)
+
+suicide_rates <- read.csv("suicide_rates.csv");
+suicide_rates$country.year <- as.character(suicide_rates$country.year)
+
+
+#View(suicide_rates)
+
+countries_distinct <- suicide_rates[,1];
+countries_distinct <- countries_distinct[!duplicated(countries_distinct)]
+
+suicide_rates_inter <- suicide_rates %>% select(ends_with("country"), year, country.year, gdp_for_year...., gdp_per_capita....)
+suicide_rates_inter <- suicide_rates_inter[c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),]
+
+#View(suicide_rates_inter)
+
+suicide_rates_inter <- suicide_rates_inter %>% mutate(male_suicide_rate = 0, male_population = 0, female_suicide_rate = 0, female_population = 0, population = 0, total_suicide_rate = 0)
+
+
+for(index_country_year in seq(1:nrow(suicide_rates_inter))) {
+  only_one_country <- suicide_rates %>% filter(suicide_rates$country.year == suicide_rates_inter$country.year[index_country_year])
+  only_one_country_m <- only_one_country %>% filter(sex == "male")
+  only_one_country_f <- only_one_country %>% filter(sex == "female")
+
+  sum_suicides <- sum(rm.na = TRUE, x = only_one_country$suicides_no)
+  sum_suicides_m <- sum(rm.na = TRUE, x = only_one_country_m$suicides_no)
+  sum_suicides_f <- sum(rm.na = TRUE, x = only_one_country_f$suicides_no)
+  
+  population_total <- sum(rm.na = TRUE, x = only_one_country$population)
+  population_m <- sum(rm.na = TRUE, x = only_one_country_m$population)
+  population_f <- sum(rm.na = TRUE, x = only_one_country_f$population)
+  
+  suicide_rate <- sum_suicides / population_total
+  suicide_rate_m <- sum_suicides_m / population_m
+  suicide_rate_f <- sum_suicides_f / population_f
+  
+  suicide_rates_inter$male_suicide_rate[index_country_year] = suicide_rate_m
+  suicide_rates_inter$female_suicide_rate[index_country_year] = suicide_rate_f
+  suicide_rates_inter$total_suicide_rate[index_country_year] = suicide_rate
+  suicide_rates_inter$population[index_country_year] = population_total
+  suicide_rates_inter$male_population[index_country_year] = population_m
+  suicide_rates_inter$female_population[index_country_year] = population_f
+
+}
+
+names(suicide_rates_inter)[1] = "Country";
+names(suicide_rates_inter)[2] = "Year";
+
+for (i in 1:nrow(suicide_rates_inter)) {
+  str <- suicide_rates_inter$Country[i]
+  if (str == "Bahamas") {
+    suicide_rates_inter$Country[i] <- "Bahamas, The"
+  } else if (str == "Slovakia") {
+    suicide_rates_inter$Country[i] <- "Slovak Republic"
+  } else if (str == "Saint Kitts and Nevis") {
+    suicide_rates_inter$Country[i] <- "St. Kitts and Nevis"
+  } else if (str == "Saint Vincent") {
+    suicide_rates_inter$Country[i] <- "St. Vincent"
+  } else if (str == "Saint Lucia") {
+    suicide_rates_inter$Country[i] <- "St. Lucia"
+  } else if (str == "Republic of Korea") {
+    suicide_rates_inter$Country[i] <- "Korea, Rep."
+  }
+}
+
+#filtering out Serbia because data for it is not present in any other dataset
+suicide_rates_inter <- suicide_rates_inter %>% filter(Country != 'Serbia')
+suicide_rates_with_gdp <- suicide_rates_inter %>% cleancountry()
+write.csv(suicide_rates_with_gdp, "suicide_rates_with_gdp_clean.csv");
+  
+  #getting gdp data
+gdp <- suicide_rates_inter %>% select("Country", "Year", "gdp_for_year....", "gdp_per_capita....")
+names(gdp) <- c("Country", "Year", "gdp", "gdp_per_capita")
+gdp$Country <- factor(gdp$Country)
+gdp <- gdp %>% cleancountry()
+gdp$gdp <- str_remove_all(gdp$gdp, ",")
+write.csv(gdp, "gdp_clean.csv")
+
+suicide_rates <- suicide_rates_inter %>% select(-c("country.year", "gdp_per_capita....", "gdp_for_year....")) %>% select(c(1,2,4,3,6,5,7,8)) %>% cleancountry()
+
+write.csv(suicide_rates, file = "suicide_rates_clean.csv")
+
+getwd()
+View(head(read.csv("suicide_rates.csv"), 30))
+
+#View(countries_distinct)
+
+```
+
+
+
+
+```{r, data_cleaning}
+
+#imputes the data using a linear model
+
+my_impute <- function(d) {
+
+  na_list <- is.na(d)
+  not_na_data <- d[!na_list,c(2,3)]
+  
+  pred <- lm(formula = not_na_data[,2] ~ Year, data = not_na_data)
+
+  for (i in 1:nrow(d)) {
+    if(is.na(d[i,3])) {
+      d[i,3] <- pred$coefficients[2] * d[i,2] + pred$coefficients[1]
+   }
+  }
+  return(d)
+  
+}
+
+
+#turns the table argument into a tidied data frame, reading in from the file argument and having a column with tidied values, named new_col. imputation_needed is a bool that is true if the data needs to be imputated, from_index is the index of the first column to ignore, and to_index is the last index to ignore while impute
+tidy_data <- function(file) {
+table1 <-read.csv(file)
+
+names(table1)[1] = "Country";
+table1 <- select(table1, -c("Country.Code", "Indicator.Name", "Indicator.Code"))
+
+
+table1 <- table1 %>% filter_at(vars('X1985':'X2016'), any_vars(!is.na(.)))
+table1 <- table1 %>% gather(key = year, value = new_col, paste0("X", seq(from = 1960, to = 2018)))
+#removing all countries in the data that do not have data for any year from 1985 to 2016
+
+table1$year <- str_remove(table1$year, "X")
+table1$year <- as.numeric(table1$year)
+mode(table1$year)
+table1 <- table1 %>% filter(table1$year >= 1985) 
+table1 <- table1 %>% filter(table1$year <= 2016)
+
+
+
+table1 <- table1 %>% filter(table1$Country %in% suicide_rates[,1])
+#table <- table %>% filter(table$year >= 1985 && table$year <= 2016)
+names(table1)[1] = "Country"
+names(table1)[2] = "Year"
+
+table1$Country <- as.character(table1$Country)
+table1
+
+}
+
+#calling the function to set up tables
+education_funding <- tidy_data("education_funding.csv") %>% removeTrailingNA() %>% cleancountry()
+names(education_funding)[3] <- "percent_of_gdp_spent_on_education"
+write.csv(education_funding, "education_funding_clean.csv")
+
+
+electricity <- tidy_data("electricity.csv") %>% removeTrailingNA() %>% cleancountry()
+names(electricity)[3] <- "percent_of_people_with_access_to_electricity"
+write.csv(electricity, "electricity_clean.csv")
+
+female_life_expectancy <- tidy_data("female_life_expectancy.csv") %>% removeTrailingNA() %>% cleancountry()
+names(female_life_expectancy)[3] <- "female_life_expectancy"
+write.csv(female_life_expectancy, "female_life_expectancy_clean.csv")
+
+
+fertility_rate <- tidy_data("fertility_rate.csv") %>% removeTrailingNA() %>% cleancountry()
+names(fertility_rate)[3] <- "fertility_rate"
+write.csv(fertility_rate, file = "fertility_rate_clean.csv")
+
+infant_mortality_rate <- tidy_data("infant_mortality_rate.csv") %>% removeTrailingNA() %>% cleancountry()
+names(infant_mortality_rate)[3] <- "infant_mortality_rate"
+write.csv(infant_mortality_rate, "infant_mortality_rate_clean.csv")
+
+
+male_life_expectancy <- tidy_data("male_life_expectancy.csv") %>% removeTrailingNA() %>% cleancountry()
+names(male_life_expectancy)[3] <- "male_life_expectancy"
+write.csv(male_life_expectancy, "male_life_expectancy_clean.csv")
+
+
+
+traffic_mortality <- tidy_data("mortality_by_traffic_injury.csv") %>% removeTrailingNA() %>% cleancountry()
+names(traffic_mortality)[3] <- "traffic_mortality"
+write.csv(traffic_mortality, "traffic_mortality_clean.csv")
+
+pop_density <- tidy_data("pop_density.csv") %>% removeTrailingNA() %>% cleancountry()
+names(pop_density)[3] <- "population_density"
+write.csv(pop_density, "pop_density_clean.csv")
+
+pop_growth <- tidy_data("population_growth.csv") %>% removeTrailingNA() %>% cleancountry()
+names(pop_growth)[3] <- "population_growth"
+write.csv(pop_growth, "population_growth_clean.csv")
+
+
+legal_rights <- tidy_data("strength_of_legal_rights.csv") %>% removeTrailingNA() %>% cleancountry()
+names(legal_rights)[3] <- "strength_of_legal_rights"
+
+unemployment <- tidy_data("unemployment.csv")%>% removeTrailingNA() %>% cleancountry()
+names(unemployment)[3] <- "unemployment_rate"
+write.csv(unemployment, "unemployment_rate_clean.csv")
+
+
+
+urban_pop <- tidy_data("urban_population.csv") %>% removeTrailingNA() %>% cleancountry()
+names(urban_pop)[3] <- "urban_population_percent"
+write.csv(urban_pop, "urban_population_clean.csv")
+
+
+
+
+#additional cleaning
+country_codes <- read.csv("rural_population.csv") %>% select(1,2)
+names(country_codes) <- c("Country.Name", "Country.Code")
+
+legal_rights$strength_of_legal_rights <- legal_rights$strength_of_legal_rights / 12;
+write.csv(legal_rights, file = "strength_of_legal_rights_clean.csv")
+
+rural_pop <- tidy_data("rural_population.csv") %>% removeTrailingNA() %>% cleancountry()
+names(rural_pop)[3] <- "rural_population_percent"
+suicide_rural_join <- suicide_rates %>%  inner_join(rural_pop, by = c("Country", "Year"))
+for (i in seq(1:nrow(suicide_rural_join))) {
+  suicide_rural_join$rural_population_percent[i] <- suicide_rural_join$rural_population_percent[i] / 
+    suicide_rural_join$population[i]
+}
+rural_pop <- select(suicide_rural_join, Country, Year, rural_population_percent)
+write.csv(rural_pop, "rural_population_clean.csv")
+
+
+urban_pop <- tidy_data("urban_population.csv") %>% removeTrailingNA() %>% cleancountry()
+names(urban_pop)[3] <- "urban_population_percent"
+suicide_urban_join <- suicide_rates %>%  inner_join(urban_pop, by = c("Country", "Year"))
+for (i in seq(1:nrow(suicide_urban_join))) {
+  suicide_urban_join$urban_population_percent[i] <- suicide_urban_join$urban_population_percent[i] / 
+    suicide_urban_join$population[i]
+}
+urban_pop <- select(suicide_urban_join, Country, Year, urban_population_percent)
+write.csv(urban_pop, "urban_population_clean.csv")
+
+
+
+#second round of imports
+marriage_inequality <- read.csv("marriage_inequality.csv")
+
+names(marriage_inequality)[1] <- "Country.Code"
+names(marriage_inequality)[6] <- "Year"
+names(marriage_inequality)[7] <- "degree_of_marriage_inequality"
+marriage_inequality <- marriage_inequality %>% inner_join(country_codes, by = c("Country.Code"))
+marriage_inequality <- marriage_inequality %>% select(Country.Name, Year, degree_of_marriage_inequality)
+marriage_inequality <- filter(marriage_inequality, marriage_inequality$Year >= 1985)
+marriage_inequality <- filter(marriage_inequality, marriage_inequality$Year <= 2016)
+marriage_inequality <- marriage_inequality %>% select(Country.Name, Year, degree_of_marriage_inequality)
+marriage_inequality <- spread(marriage_inequality, key = Year, value = degree_of_marriage_inequality)
+marriage_inequality <- marriage_inequality %>% gather(key = Year, value = new_col, c("2014"))
+names(marriage_inequality)[1] <- "Country"
+names(marriage_inequality)[3] <- "degree_of_marriage_inequality"
+marriage_inequality$Year <- as.numeric(marriage_inequality$Year)
+marriage_inequality <- marriage_inequality %>% removeTrailingNA() %>% cleancountry()
+marriage_inequality$Country <- str_replace(marriage_inequality$Country, "Cote d'Ivoire", "Ivory Coast")
+write.csv(marriage_inequality, file = "marriage_inequality_clean.csv")
+
+
+hours_worked <- read.csv("hours_worked.csv")
+names(hours_worked)[1] <- "Country.Code"
+names(hours_worked)[6] <- "Year"
+names(hours_worked)[7] <- "average_hours_worked"
+
+hours_worked <- inner_join(hours_worked, country_codes, by = c("Country.Code"))
+hours_worked <- filter(hours_worked, hours_worked$Year >= 1985)
+hours_worked <- filter(hours_worked, hours_worked$Year <= 2016)
+
+hours_worked <- hours_worked %>% select(Country.Name, Year, average_hours_worked)
+hours_worked <- spread(hours_worked, key = Year, value = average_hours_worked)
+
+hours_worked <- hours_worked %>% gather(key = Year, value = new_col, c("2014", "2015", "2016"))
+names(hours_worked)[1] <- "Country"
+names(hours_worked)[3] <- "average_hours_worked"
+hours_worked$Year <- as.numeric(hours_worked$Year)
+hours_worked <- hours_worked %>% removeTrailingNA() %>% cleancountry()
+write.csv(hours_worked, "hours_worked_clean.csv")
+
+
+income_inequality <- read.csv("income_inequality.csv")
+
+names(income_inequality)[1] <- "Country.Code"
+names(income_inequality)[6] <- "Year"
+names(income_inequality)[7] <- "degree_of_gender_based_income_inequality"
+income_inequality <- income_inequality %>% inner_join(country_codes, by = c("Country.Code"))
+income_inequality <- income_inequality %>% spread(key = Year, value = degree_of_gender_based_income_inequality)
+income_inequality <- income_inequality %>% select(Country.Name, c("2014", "2015", "2016"))
+#impute data
+
+income_inequality <- income_inequality %>% gather(key = Year, value = new_col, c("2014", "2015", "2016"))
+names(income_inequality) <- c("Country", "Year", "degree_of_income_inequality")
+income_inequality$Year <- as.numeric(income_inequality$Year)
+income_inequality$Country <- str_replace(income_inequality$Country, "Cote d'Ivoire", "Ivory Coast")
+
+income_inequality <- income_inequality %>% removeTrailingNA() %>% cleancountry()
+write.csv(income_inequality, "income_inequality_clean.csv")
+```
+
+```{r, import_greg}
+#Reading from the clean files included in the project zip file, as created by the code in DataSets.Rmd
+mental <- read.csv("Mental.csv")
+mental <- mental %>% select(-c(1))
+names(mental) <- str_replace(names(mental), "X.", "%")
+mental$Country <- str_remove_all(mental$Country, "'")
+
+hdi <- read.csv("HDI.csv") %>% select(-c(1))
+
+#adding category of hdi
+for (i in 1:nrow(hdi)) {
+  
+  if (hdi$hdi[i] >= 0.8) {
+    hdi$Category[i] <- 'Very High'
+    next
+  } 
+  
+  if (hdi$hdi[i] >= 0.7) {
+    hdi$Category[i] <- 'High'
+    next
+  } 
+  
+  if (hdi$hdi[i] >= 0.55) {
+    hdi$Category[i] <- 'Medium'
+    next
+  }
+  
+  hdi$Category[i] <- 'Very Low'
+  
+  
+}
+hdi <- hdi %>% cleancountry()
+hdi$Category <- factor(hdi$Category, levels = c("Very Low", "Low", "Medium", "High", "Very High"))
+
+globalnatdis <- read.csv("GlobalNatDis.csv") %>% select(-c(1))
+names(globalnatdis) <- c("Entity", "Year", "Raw Death Amount", "Death Rate")
+
+displacedpersons <- read.csv("DisplacedPersons.csv") %>% select(-c(1))
+names(displacedpersons)[3] <- "Displaced Persons"
+displacedpersons$Country <- str_remove_all(displacedpersons$Country, "'")
+
+
+averageHouseSize <- read.csv("AverageHouseSize.csv") %>% select(-c(1))
+
+avgNumByAge <- read.csv("AvgNumByAge.csv") %>% select(-c(1))
+names(avgNumByAge) <- c("Country", "Year", "Fifteen_Minus", "Fifteen_Minus_Sib", "Twenty_Minus", "Twenty_Minus_Sib", "Twenty_To_Sixtyfour")
+
+bastardChild <- read.csv("BastardChild.csv") %>% select(-c(1))
+
+marriage <- read.csv("Marriage.csv") %>% select(-c(1))
+
+meanAgeAtBirth <- read.csv("MeanAgeAtBirth.csv") %>% select(-c(1))
+
+parents <- read.csv("Parents.csv") %>% select(-c(1))
+
+perFHead <- read.csv("PerFemaleHead.csv") %>% select(-c(1))
+names(perFHead)[3] <- "Percent"
+
+perFamDemo <- read.csv("PerFamDemo.csv") %>% select(-c(1))
+
+perOldHead <- read.csv("PerOldHead.csv") %>% select(-c(1))
+
+perYoungHead <- read.csv("PerYoungHead.csv") %>% select(-c(1))
+names(perYoungHead) <- c("Country", "Year", "Twenty_Minus", "Twenty_To_Sixtyfour")
+
+perAgeRange <- read.csv("PerAgeRange.csv") %>% select(-c(1))
+
+perMember <- read.csv("PerFamilyMember.csv") %>%
+  select(-c(1))
+
+
+
+```
+
+
+
+```{r, database, echo = FALSE, message = FALSE, include = FALSE}
+#WARNING: Running the code in this section drops the data from the database, creates the tables again, and inserts the tuples from the tables in R into the code. This takes an extremely long time, so run this code with care.
+db <- dbConnect(SQLite(), dbname = "suicide_rates.sqlite")
+
+
+insert_data <- function(df, is_hdi = FALSE) {
+    for (i in 1:nrow(df)) {
+
+    query <- paste0("INSERT INTO ", deparse(substitute(df)), " VALUES (");
+    for (j in seq(1:ncol(df))) {
+      if (j == 1 || (is_hdi && j == ncol(df))) {
+        query <- paste0(query, "'");
+      }
+      query <- paste0(query, df[i, j])
+      if (j == 1|| (is_hdi && j == ncol(df))) {
+        query <- paste0(query, "'");
+      }
+      if (j == ncol(df)) {
+        query <- paste0(query, ");")
+      } else {
+        query <- paste0(query, ", ")
+      }
+    }
+    print(query)
+    dbSendQuery(db, query)
+
+  }
+}
+
+
+create_table <- function(is_suicide = FALSE, df, column_names, data_types = c("VARCHAR(64)", "NUMERIC", "NUMERIC"), pk = c("Country", "Year")) {
+  print(column_names)
+  print(is_suicide)
+  fields <- "";
+  for (i in seq(1:length(column_names))) {
+    fields <- paste0(fields, column_names[i], " ", data_types[i], " NOT NULL, ")
+  }
+  header <- paste0("CREATE TABLE ", deparse(substitute(df)), "( ")
+  pk <- paste0("PRIMARY KEY(", pk[1], ", ", pk[2], ")")
+  query <- paste0(header, fields, pk)
+  if (is_suicide) {
+    query <- paste0(query, ", ")
+    for (str in c("education_funding", "electricity", "female_life_expectancy", "fertility_rate", "infant_mortality_rate", "male_life_expectancy", "traffic_mortality", "pop_density", "pop_growth", "rural_pop", "legal_rights", "unemployment", "urban_pop", "income_inequality", "marriage_inequality", "hours_worked", "gdp", "mental", "hdi", "housedemo", "displacedpersons", "averageHouseSize", "avgNumByAge", "bastardChild", "marriage", "meanAgeAtBirth", "parents", "perFHead", "perMember", "perOldHead", "perYoungHead", "perAgeRange")) {
+      query <- paste0(query, "FOREIGN KEY (Country, Year) REFERENCES ", str, " (Country, Year)")
+      if (str != "perAgeRange") {
+        query <- paste0(query, ",")
+      }
+    }
+  }
+  query <- paste0(query, ");")
+  dbSendQuery(db, query)
+}
+
+dbSendQuery(db, "DROP TABLE IF EXISTS education_funding;")
+dbSendQuery(db, "DROP TABLE IF EXISTS electricity;")
+dbSendQuery(db, "DROP TABLE IF EXISTS female_life_expectancy;")
+dbSendQuery(db, "DROP TABLE IF EXISTS fertility_rate;")
+dbSendQuery(db, "DROP TABLE IF EXISTS infant_mortality_rate;")
+dbSendQuery(db, "DROP TABLE IF EXISTS male_life_expectancy;")
+dbSendQuery(db, "DROP TABLE IF EXISTS traffic_mortality;")
+dbSendQuery(db, "DROP TABLE IF EXISTS pop_density;")
+dbSendQuery(db, "DROP TABLE IF EXISTS pop_growth;")
+dbSendQuery(db, "DROP TABLE IF EXISTS rural_pop;")
+dbSendQuery(db, "DROP TABLE IF EXISTS legal_rights;")
+dbSendQuery(db, "DROP TABLE IF EXISTS unemployment;")
+dbSendQuery(db, "DROP TABLE IF EXISTS urban_pop;")
+dbSendQuery(db, "DROP TABLE IF EXISTS income_inequality;")
+dbSendQuery(db, "DROP TABLE IF EXISTS marriage_inequality;")
+dbSendQuery(db, "DROP TABLE IF EXISTS hours_worked;")
+dbSendQuery(db, "DROP TABLE IF EXISTS gdp;")
+
+dbSendQuery(db, "DROP TABLE IF EXISTS mental;")
+dbSendQuery(db, "DROP TABLE IF EXISTS hdi;")
+dbSendQuery(db, "DROP TABLE IF EXISTS housedemo;")
+dbSendQuery(db, "DROP TABLE IF EXISTS globalnatdis;")
+dbSendQuery(db, "DROP TABLE IF EXISTS displacedpersons;")
+dbSendQuery(db, "DROP TABLE IF EXISTS averageHouseSize;")
+dbSendQuery(db, "DROP TABLE IF EXISTS avgNumByAge;")
+dbSendQuery(db, "DROP TABLE IF EXISTS bastardChild;")
+dbSendQuery(db, "DROP TABLE IF EXISTS marriage;")
+dbSendQuery(db, "DROP TABLE IF EXISTS meanAgeAtBirth;")
+dbSendQuery(db, "DROP TABLE IF EXISTS parents;")
+dbSendQuery(db, "DROP TABLE IF EXISTS perFHead;")
+dbSendQuery(db, "DROP TABLE IF EXISTS perMember;")
+dbSendQuery(db, "DROP TABLE IF EXISTS perOldHead;")
+dbSendQuery(db, "DROP TABLE IF EXISTS perYoungHead;")
+dbSendQuery(db, "DROP TABLE IF EXISTS perAgeRange;")
+
+dbSendQuery(db, "DROP TABLE IF EXISTS suicide_rates;")
+
+
+pk_typ <- c("Country", "Year")
+
+create_table(is_suicide = FALSE, education_funding, column_names = c(names(education_funding)))
+create_table(FALSE, electricity, column_names = c("country", "year", "percent_of_people_with_access_to_electricity"))
+create_table(FALSE, female_life_expectancy, column_names = c(pk_typ, "female_life_expectancy"))
+create_table(FALSE, fertility_rate, column_names = c(pk_typ, "fertility_rate"))
+create_table(FALSE, infant_mortality_rate, column_names = c(pk_typ, "infant_mortality_rate"))
+create_table(FALSE, male_life_expectancy, column_names = c(pk_typ, "male_life_expectancy"))
+create_table(FALSE, traffic_mortality, column_names = c(pk_typ, "traffic_mortality"))
+create_table(FALSE, pop_density, column_names = c(pk_typ, "population_density"))
+create_table(FALSE, pop_growth, column_names = c(pk_typ, "population_growth"))
+create_table(FALSE, rural_pop, column_names = c(pk_typ, "rural_population_percent"))
+create_table(FALSE, legal_rights, column_names = c(pk_typ, "strength_of_legal_rights"))
+create_table(FALSE,unemployment, column_names = c(pk_typ, "unemployment_rate"))
+create_table(FALSE,urban_pop, column_names = c(pk_typ, "urban_population_percent"))
+create_table(FALSE,income_inequality, column_names = c(pk_typ, "degree_of_income_inequality"))
+create_table(FALSE,gdp, column_names = c(pk_typ, "gdp", "gdp_per_capita"), data_types = c("VARCHAR(64)", "NUMERIC", "NUMERIC", "NUMERIC"))
+create_table(FALSE,marriage_inequality, column_names = c(pk_typ, "degree_of_marriage_inequality"))
+create_table(FALSE,mental, column_names = c(str_remove(names(mental), "%")), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(mental) - 1)))
+create_table(FALSE,hdi, column_names = c("Country", "Year", "hdi", "Category"), data_types = c("VARCHAR(64)", "NUMERIC", "NUMERIC", "VARCHAR(16)"))
+create_table(FALSE,hours_worked, column_names = c("Country", "Year", "average_hours_worked"))
+create_table(FALSE,globalnatdis, column_names = str_replace(names(globalnatdis), "#", "Amount"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(globalnatdis) - 1)), pk = c("Entity", "Year"))
+create_table(FALSE,displacedpersons, column_names = names(displacedpersons))
+create_table(FALSE,averageHouseSize, column_names = names(averageHouseSize))
+create_table(FALSE,avgNumByAge, column_names = str_replace(str_remove(names(avgNumByAge), "-"), "2064", "20to64"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(avgNumByAge) - 1)))
+create_table(FALSE,bastardChild, column_names = names(bastardChild))
+create_table(FALSE,marriage, column_names = names(marriage), data_types = c("VARCHAR(64)", "NUMERIC", "NUMERIC", "NUMERIC"))
+create_table(FALSE,meanAgeAtBirth, column_names = names(meanAgeAtBirth))
+create_table(FALSE,parents, column_names = names(parents), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(parents) - 1)))
+create_table(FALSE,perAgeRange, column_names = c("Country", "Year", "OneToFifteen", "OneToEighteen", "OnetoTwenty", "OneToSixty", "OneToSixtyfive", "BelowFifteenAboveSixty", "BelowFifteenAboveSixtyfive", "BelowEighteenAboveSixty", "BelowEighteenAboveSixtyfive"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(perAgeRange) - 1)));
+create_table(FALSE,perFHead, column_names = str_replace(names(perFHead), "%", "Percent"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(perFHead) - 1)))
+create_table(FALSE,perMember, column_names = c("Country", "Year", "PercentOne", "PercentTwoOrThree", "PercentFourOrFive", "PercentSixPlus"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(perMember) - 1)))
+create_table(FALSE,perOldHead, column_names = c("Country", "Year", "PercentSixtyPlus", "PercentSixtyfivePlus"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(perOldHead) - 1)))
+create_table(FALSE,perYoungHead, column_names =c("Country", "Year", "PercentTwentyMinus", "PercentTwentyToSixtyfour"), data_types = c("VARCHAR(64)", rep("NUMERIC", ncol(perYoungHead) - 1)))
+
+create_table(is_suicide = TRUE, suicide_rates, column_names = c(pk_typ, "male_population", "male_suicide_rate", "female_population", "female_suicide_rate", "population", "total_suicide_rate"), data_types = c("VARCHAR(64)", rep("NUMERIC", 7)))
+
+insert_data(education_funding)
+insert_data(electricity)
+insert_data(female_life_expectancy)
+insert_data(fertility_rate)
+insert_data(infant_mortality_rate)
+insert_data(male_life_expectancy)
+insert_data(traffic_mortality)
+insert_data(pop_density)
+insert_data(hours_worked)
+insert_data(pop_growth)
+insert_data(rural_pop)
+insert_data(legal_rights)
+insert_data(unemployment)
+insert_data(urban_pop)
+insert_data(income_inequality)
+insert_data(marriage_inequality)
+insert_data(gdp)
+
+insert_data(mental)
+insert_data(hdi, is_hdi = TRUE)
+insert_data(globalnatdis)
+insert_data(displacedpersons)
+insert_data(averageHouseSize)
+insert_data(avgNumByAge)
+insert_data(bastardChild)
+insert_data(marriage)
+insert_data(meanAgeAtBirth)
+insert_data(parents)
+insert_data(perAgeRange)
+insert_data(perFHead)
+insert_data(perMember)
+insert_data(perOldHead)
+insert_data(perYoungHead)
+insert_data(suicide_rates)
+
+
+
+```
+
+
+```{r, visualize}
+#NOTE: This is exploratory visualization, just so that we could investigate the data once we had it imported, and, in the end, was not used to determine which attributes we thought would be significant. We have included it to show you our beginning process, but we did not write interpretations for these visualizations, and is not intended to fulfill the visualization requirement of this project. Our visualization section is clearly labeled in the report in VisualPlayground.pdf.
+library(ggplot2)
+
+education_funding_join <- education_funding %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country")) 
+education_funding_join <- inner_join(education_funding_join, suicide_rates, by = c("Year"))
+education_funding_join <- education_funding_join %>% filter(Country.x == Country.y);
+ggplot(data = education_funding_join) +
+  geom_smooth(method = 'lm', aes(x = percent_of_gdp_spent_on_education, y = total_suicide_rate)) +
+                facet_grid(. ~ Category)
+
+electricity_join <- electricity %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+electricity_join <- inner_join(electricity_join, suicide_rates, by = c("Year"))
+electricity_join <- electricity_join %>% filter(Country.x == Country.y);
+ggplot(data = electricity_join) +
+  geom_smooth(method = 'lm', map = aes(x = percent_of_people_with_access_to_electricity, y = total_suicide_rate)) +
+                facet_grid(. ~ Category)
+
+female_life_expectancy_join <- female_life_expectancy %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+female_life_expectancy_join <- inner_join(female_life_expectancy_join, suicide_rates, by = c("Year"))
+female_life_expectancy_join<- female_life_expectancy_join %>% filter(Country.x == Country.y);
+ggplot(data = female_life_expectancy_join) +
+  geom_smooth( method = 'lm', map = aes(x = female_life_expectancy, y = total_suicide_rate)) +
+  facet_grid(. ~ Category)
+
+male_life_expectancy_join <- male_life_expectancy %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+male_life_expectancy_join <- inner_join(male_life_expectancy_join, suicide_rates, by = c("Year"))
+male_life_expectancy_join <- male_life_expectancy_join %>% filter(Country.x == Country.y);
+ggplot(data = male_life_expectancy_join) +
+  geom_smooth(method = 'lm', map = aes(x = male_life_expectancy, y = total_suicide_rate)) +
+  facet_grid(. ~ Category)
+
+fertility_rate_join <- fertility_rate %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+fertility_rate_join <- inner_join(fertility_rate_join, suicide_rates, by = c("Year"))
+fertility_rate_join<- fertility_rate_join %>% filter(Country.x == Country.y);
+ggplot(data = fertility_rate_join) +
+  geom_point(map = aes(x = fertility_rate, y = female_suicide_rate), color = 'pink') +
+    geom_point(map = aes(x = fertility_rate, y = male_suicide_rate), color = 'blue') +
+
+  facet_grid(. ~ Category) +
+  labs(title = "Fertility Rate and Suicide Rates", x = "Fertility Rate", y = "Suicide Rate")
+
+
+gdp_join <- gdp %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+gdp_join <- inner_join(gdp_join, suicide_rates, by = c("Year"))
+gdp_join <- gdp_join %>% filter(Country.x == Country.y);
+ggplot(data = gdp_join) +
+    geom_point(map = aes(x = gdp_per_capita, y = total_suicide_rate)) +
+  facet_grid(. ~ Category)
+
+infant_mort_rate_join <- infant_mortality_rate %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+infant_mort_rate_join <- inner_join(infant_mort_rate_join, suicide_rates, by = c("Year"))
+infant_mort_rate_join <- infant_mort_rate_join %>% filter(Country.x == Country.y);
+ggplot(data = infant_mort_rate_join) +
+  geom_point(method = 'lm', map = aes(x = infant_mortality_rate, y = total_suicide_rate)) +
+  facet_grid(. ~ Category) + labs(title = "Infant Mortality Rate and Suicide Rates", x = "Infant Mortality Rate", y = "Suicide Rate")
+
+hours_worked_join <- hours_worked %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+hours_worked_join <- inner_join(hours_worked_join, suicide_rates, by = c("Year"))
+hours_worked_join <- hours_worked_join %>% filter(Country.x == Country.y);
+ggplot(data = hours_worked_join) +
+    geom_smooth(method = 'lm', map = aes(x = average_hours_worked, y = total_suicide_rate), color = 'red') +
+  facet_grid(. ~ Category) + labs(title = "Average Hours Worked In Year and Suicide Rates", x = "Average Hours Worked", y = "Suicide Rate")
+
+marriage_join <- inner_join(marriage_inequality, suicide_rates, by = c("Year"))
+marriage_join <- marriage_join %>% filter(Country.x == Country.y);
+ggplot(data = marriage_join) +
+  geom_jitter(map = aes(x = degree_of_marriage_inequality, y = total_suicide_rate))
+
+mortality_traffic_join <- inner_join(traffic_mortality, suicide_rates, by = c("Year"))
+mortality_traffic_join <- mortality_traffic_join %>% filter(Country.x == Country.y);
+ggplot(data = mortality_traffic_join) +
+  geom_jitter(map = aes(x = traffic_mortality, y = total_suicide_rate))
+
+pop_density_join <- pop_density %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+pop_density_join <- inner_join(pop_density_join, suicide_rates, by = c("Year"))
+pop_density_join <- pop_density_join %>% filter(Country.x == Country.y);
+ggplot(data = pop_density_join) +
+  geom_point(map = aes(x = log(population_density), y = total_suicide_rate, color = Year))
+
+pop_growth_join <- pop_growth %>% select(-c("Year")) %>% inner_join(hdi, by = c("Country"))
+pop_growth_join <- inner_join(pop_growth_join, suicide_rates, by = c("Year"))
+pop_growth_join <- pop_growth_join %>% filter(Country.x == Country.y);
+ggplot(data = pop_growth_join) +
+  geom_point(map = aes(x = (population_growth), y = total_suicide_rate)) +
+ facet_grid(. ~ Category)
+
+```
+
+
+```{r, linear_models}
+library(ggplot2)
+
+
+
+electricity_join <- dbGetQuery(db, "SELECT * FROM electricity JOIN suicide_rates ON electricity.country = suicide_rates.Country AND electricity.year = suicide_rates.Year")
+pred_electricity <- lm(data = electricity_join, formula = total_suicide_rate ~ percent_of_people_with_access_to_electricity)
+summary(pred_electricity)
+ggplot(education_funding_join) +
+  geom_histogram(aes(x = percent_of_people_with_access_to_electricity))
+
+education_funding_join <- dbGetQuery(db, "SELECT * FROM education_funding JOIN suicide_rates ON education_funding.Country = suicide_rates.Country AND education_funding.Year = suicide_rates.Year")
+pred_education_funding <- lm(data = education_funding_join, formula = total_suicide_rate ~ percent_of_gdp_spent_on_education)
+summary(pred_education_funding)
+ggplot(education_funding_join) +
+  geom_histogram(aes(x = percent_of_gdp_spent_on_education))
+
+
+
+
+female_life_expectancy_join <- dbGetQuery(db, "SELECT * FROM female_life_expectancy JOIN suicide_rates ON female_life_expectancy.Country = suicide_rates.Country AND female_life_expectancy.Year = suicide_rates.Year")
+pred_female_life_expectancy <- lm(data = female_life_expectancy_join, formula = total_suicide_rate ~ female_life_expectancy)
+summary(pred_female_life_expectancy)
+ggplot(female_life_expectancy) +
+  geom_histogram(aes(x = female_life_expectancy))
+
+fertility_rate_join <- dbGetQuery(db, "SELECT * FROM fertility_rate JOIN suicide_rates ON fertility_rate.Country = suicide_rates.Country AND fertility_rate.Year = suicide_rates.Year")
+pred_fertility_rate <- lm(data = fertility_rate_join, formula = total_suicide_rate ~ fertility_rate)
+summary(pred_fertility_rate)
+ggplot(fertility_rate_join) +
+  geom_histogram(aes(x = fertility_rate))
+
+infant_mortality_rate_join <- dbGetQuery(db, "SELECT * FROM infant_mortality_rate JOIN suicide_rates ON infant_mortality_rate.Country = suicide_rates.Country AND infant_mortality_rate.Year = suicide_rates.Year")
+pred_infant_mortality_rate <- lm(data = infant_mortality_rate_join, formula = total_suicide_rate ~ infant_mortality_rate)
+summary(pred_infant_mortality_rate)
+ggplot(infant_mortality_rate_join) +
+  geom_histogram(aes(x = infant_mortality_rate))
+
+male_life_expectancy_join <- dbGetQuery(db, "SELECT * FROM male_life_expectancy JOIN suicide_rates ON male_life_expectancy.Country = suicide_rates.Country AND male_life_expectancy.Year = suicide_rates.Year")
+pred_male_life_expectancy <- lm(data = male_life_expectancy_join, formula = total_suicide_rate ~ male_life_expectancy)
+summary(pred_male_life_expectancy)
+ggplot(male_life_expectancy_join) +
+  geom_histogram(aes(x = male_life_expectancy))
+
+traffic_mortality_join <- dbGetQuery(db, "SELECT * FROM traffic_mortality JOIN suicide_rates ON traffic_mortality.Country = suicide_rates.Country AND traffic_mortality.Year = suicide_rates.Year")
+pred_traffic_mortality <- lm(data = traffic_mortality_join, formula = total_suicide_rate ~ traffic_mortality)
+summary(pred_traffic_mortality)
+ggplot(traffic_mortality_join) +
+  geom_histogram(aes(x = traffic_mortality))
+
+pop_density_join <- dbGetQuery(db, "SELECT * FROM pop_density JOIN suicide_rates ON pop_density.Country = suicide_rates.Country AND pop_density.Year = suicide_rates.Year")
+pred_pop_density <- lm(data = pop_density_join, formula = total_suicide_rate ~ population_density)
+summary(pred_pop_density)
+ggplot(pop_density_join) +
+  geom_histogram(aes(x = population_density))
+
+pop_growth_join <- dbGetQuery(db, "SELECT * FROM pop_growth JOIN suicide_rates ON pop_growth.Country = suicide_rates.Country AND pop_growth.Year = suicide_rates.Year")
+pred_pop_growth <- lm(data = pop_growth_join, formula = total_suicide_rate ~ population_growth)
+summary(pred_pop_growth)
+ggplot(pop_growth_join) +
+  geom_histogram(aes(x = population_growth))
+
+rural_pop_join <- dbGetQuery(db, "SELECT * FROM rural_pop JOIN suicide_rates ON rural_pop.Country = suicide_rates.Country AND rural_pop.Year = suicide_rates.Year")
+pred_rural_pop <- lm(data = rural_pop_join, formula = total_suicide_rate ~ rural_population_percent)
+summary(pred_rural_pop)
+ggplot(rural_pop_join) +
+  geom_histogram(aes(x = rural_population_percent))
+
+legal_rights_join <- dbGetQuery(db, "SELECT * FROM legal_rights JOIN suicide_rates ON legal_rights.Country = suicide_rates.Country AND legal_rights.Year = suicide_rates.Year")
+pred_legal_rights <- lm(data = legal_rights_join, formula = total_suicide_rate ~ strength_of_legal_rights)
+summary(pred_legal_rights)
+ggplot(legal_rights_join) +
+  geom_histogram(aes(x = strength_of_legal_rights))
+
+unemployment_join <- dbGetQuery(db, "SELECT * FROM unemployment JOIN suicide_rates ON unemployment.Country = suicide_rates.Country AND unemployment.Year = suicide_rates.Year")
+pred_unemployment <- lm(data = unemployment_join, formula = total_suicide_rate ~ unemployment_rate)
+summary(pred_unemployment)
+ggplot(unemployment_join) +
+  geom_histogram(aes(x = unemployment_rate))
+
+urban_pop_join <- dbGetQuery(db, "SELECT * FROM urban_pop JOIN suicide_rates ON urban_pop.Country = suicide_rates.Country AND urban_pop.Year = suicide_rates.Year")
+pred_urban_pop <- lm(data = urban_pop_join, formula = total_suicide_rate ~ urban_population_percent)
+summary(pred_urban_pop)
+ggplot(urban_pop_join) +
+  geom_histogram(aes(x = urban_population_percent))
+
+income_inequality_join <- dbGetQuery(db, "SELECT * FROM income_inequality JOIN suicide_rates ON income_inequality.Country = suicide_rates.Country AND income_inequality.Year = suicide_rates.Year")
+pred_income_inequality <- lm(data = income_inequality_join, formula = total_suicide_rate ~ degree_of_income_inequality)
+summary(pred_income_inequality)
+ggplot(income_inequality_join) +
+  geom_histogram(aes(x = degree_of_income_inequality))
+
+marriage_inequality_join <- dbGetQuery(db, "SELECT * FROM marriage_inequality JOIN suicide_rates ON marriage_inequality.Country = suicide_rates.Country AND marriage_inequality.Year = suicide_rates.Year")
+pred_marriage_inequality <- lm(data = marriage_inequality_join, formula = total_suicide_rate ~ degree_of_marriage_inequality)
+summary(pred_marriage_inequality)
+ggplot(marriage_inequality_join) +
+  geom_histogram(aes(x = degree_of_marriage_inequality))
+
+hours_worked_join <- dbGetQuery(db, "SELECT * FROM hours_worked JOIN suicide_rates ON hours_worked.Country = suicide_rates.Country AND hours_worked.Year = suicide_rates.Year")
+pred_hours_worked <- lm(data = hours_worked_join, formula = total_suicide_rate ~ average_hours_worked)
+summary(pred_hours_worked)
+ggplot(hours_worked_join) +
+  geom_histogram(aes(x = average_hours_worked))
+
+gdp_join <- dbGetQuery(db, "SELECT * FROM gdp JOIN suicide_rates ON gdp.Country = suicide_rates.Country AND gdp.Year = suicide_rates.Year")
+pred_gdp <- lm(data = gdp_join, formula = total_suicide_rate ~ gdp_per_capita)
+summary(pred_gdp)
+ggplot(gdp_join) +
+  geom_histogram(aes(x = gdp_per_capita))
+
+mental_join <- dbGetQuery(db, "SELECT * FROM mental JOIN suicide_rates ON mental.Country = suicide_rates.Country AND mental.Year = suicide_rates.Year")
+pred_mental_total <- lm(data = mental_join, formula = total_suicide_rate ~ Pop)
+summary(pred_mental_total)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Pop))
+
+pred_schiz <- lm(data = mental_join, formula = total_suicide_rate ~ Schiz)
+summary(pred_schiz)
+ggplot(pred_schiz) +
+  geom_histogram(aes(x = Schiz))
+
+pred_bipolar <- lm(data = mental_join, formula = total_suicide_rate ~ Bipolar)
+summary(pred_bipolar)
+ggplot(pred_bipolar) +
+  geom_histogram(aes(x = Bipolar))
+
+pred_eat <- lm(data = mental_join, formula = total_suicide_rate ~ Eat)
+summary(pred_eat)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Eat))
+
+pred_anxiety <- lm(data = mental_join, formula = total_suicide_rate ~ Anxiety)
+summary(pred_anxiety)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Anxiety))
+
+pred_drug <- lm(data = mental_join, formula = total_suicide_rate ~ Drug)
+summary(pred_drug)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Drug))
+
+pred_sad <- lm(data = mental_join, formula = total_suicide_rate ~ Sad)
+summary(pred_sad)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Sad))
+
+pred_alcohol <- lm(data = mental_join, formula = total_suicide_rate ~ Alcohol)
+summary(pred_alcohol)
+ggplot(mental_join) +
+  geom_histogram(aes(x = Alcohol))
+
+hdi_join <- dbGetQuery(db, "SELECT * FROM hdi JOIN suicide_rates ON hdi.Country = suicide_rates.Country AND hdi.Year = suicide_rates.Year")
+pred_hdi <- lm(data = hdi_join, formula = total_suicide_rate ~ hdi)
+summary(pred_hdi)
+ggplot(hdi_join) +
+  geom_histogram(aes(x = hdi))
+
+globalnatdis_join <- dbGetQuery(db, "SELECT * FROM globalnatdis JOIN suicide_rates ON globalnatdis.Year = suicide_rates.Year")
+pred_globalnatdis <- lm(data = globalnatdis_join, formula = total_suicide_rate ~ Death)
+summary(pred_globalnatdis)
+ggplot(globalnatdis_join) +
+  geom_histogram(aes(x = Death))
+
+displacedpersons_join <- dbGetQuery(db, "SELECT * FROM displacedpersons JOIN suicide_rates ON displacedpersons.Country = suicide_rates.Country AND displacedpersons.Year = suicide_rates.Year")
+pred_displacedpersons <- lm(data = displacedpersons_join, formula = total_suicide_rate ~ Displaced)
+summary(pred_displacedpersons)
+ggplot(displacedpersons_join) +
+  geom_histogram(aes(x = Displaced))
+
+averageHouseSize_join <- dbGetQuery(db, "SELECT * FROM averageHouseSize JOIN suicide_rates ON averageHouseSize.Country = suicide_rates.Country AND averageHouseSize.Year = suicide_rates.Year")
+pred_averageHouseSize <- lm(data = averageHouseSize_join, formula = total_suicide_rate ~ AVGHouseSize)
+summary(pred_averageHouseSize)
+ggplot(averageHouseSize_join) +
+  geom_histogram(aes(x = AVGHouseSize))
+
+avgNumByAge_join <- dbGetQuery(db, "SELECT * FROM avgNumByAge JOIN suicide_rates ON avgNumByAge.Country = suicide_rates.Country AND avgNumByAge.Year = suicide_rates.Year")
+
+pred_FifteenMinus <- lm(data = avgNumByAge_join, formula = total_suicide_rate ~ Fifteen_Minus)
+summary(pred_FifteenMinus)
+ggplot(avgNumByAge_join) +
+  geom_histogram(aes(x = Fifteen_Minus))
+
+pred_TwentyMinus <- lm(data = avgNumByAge_join, formula = total_suicide_rate ~ Twenty_Minus)
+summary(pred_TwentyMinus)
+ggplot(avgNumByAge_join) +
+  geom_histogram(aes(x = Twenty_Minus))
+
+pred_TwentyToSixtyfour <- lm(data = avgNumByAge_join, formula = total_suicide_rate ~ Twenty_To_Sixtyfour)
+summary(pred_TwentyToSixtyfour)
+ggplot(avgNumByAge_join) +
+  geom_histogram(aes(x = Twenty_To_Sixtyfour))
+
+bastardChild_join <- dbGetQuery(db, "SELECT * FROM bastardChild JOIN suicide_rates ON bastardChild.Country = suicide_rates.Country AND bastardChild.Year = suicide_rates.Year")
+pred_bastardChild <- lm(data = bastardChild_join, formula = total_suicide_rate ~ OutOfWedlock)
+summary(pred_bastardChild)
+ggplot(bastardChild_join) +
+  geom_histogram(aes(x = OutOfWedlock))
+
+marriage_join <- dbGetQuery(db, "SELECT * FROM marriage JOIN suicide_rates ON marriage.Country = suicide_rates.Country AND marriage.Year = suicide_rates.Year")
+pred_marriage <- lm(data = marriage_join, formula = total_suicide_rate ~ Marriage)
+summary(pred_marriage)
+ggplot(marriage_join) +
+  geom_histogram(aes(x = Marriage))
+
+pred_divorce <- lm(data = marriage_join, formula = total_suicide_rate ~ Divorce)
+summary(pred_divorce)
+ggplot(marriage_join) +
+  geom_histogram(aes(x = Divorce))
+
+meanAgeAtBirth_join <- dbGetQuery(db, "SELECT * FROM meanAgeAtBirth JOIN suicide_rates ON meanAgeAtBirth.Country = suicide_rates.Country AND meanAgeAtBirth.Year = suicide_rates.Year")
+pred_meanAgeAtBirth <- lm(data = meanAgeAtBirth_join, formula = total_suicide_rate ~ AgeAtBirth)
+summary(pred_meanAgeAtBirth)
+ggplot(meanAgeAtBirth_join) +
+  geom_histogram(aes(x = AgeAtBirth))
+
+parents_join <- dbGetQuery(db, "SELECT * FROM parents JOIN suicide_rates ON parents.Country = suicide_rates.Country AND parents.Year = suicide_rates.Year")
+
+pred_two_parents <- lm(data = parents_join, formula = total_suicide_rate ~ TwoParents)
+summary(pred_two_parents)
+ggplot(parents_join) +
+  geom_histogram(aes(x = TwoParents))
+
+pred_single_parent <- lm(data = parents_join, formula = total_suicide_rate ~ SingleParent)
+summary(pred_single_parent)
+ggplot(parents_join) +
+  geom_histogram(aes(x = SingleParent))
+
+pred_other_parent <- lm(data = parents_join, formula = total_suicide_rate ~ OtherParent)
+summary(pred_other_parent)
+ggplot(parents_join) +
+  geom_histogram(aes(x = OtherParent))
+
+perFHead_join <- dbGetQuery(db, "SELECT * FROM perFHead JOIN suicide_rates ON perFHead.Country = suicide_rates.Country AND perFHead.Year = suicide_rates.Year")
+pred_perFHead <- lm(data = perFHead_join, formula = total_suicide_rate ~ Percent)
+summary(pred_perFHead)
+ggplot(perFHead_join) +
+  geom_histogram(aes(x = Percent))
+
+perMember_join <- dbGetQuery(db, "SELECT * FROM perMember JOIN suicide_rates ON perMember.Country = suicide_rates.Country AND perMember.Year = suicide_rates.Year")
+
+pred_perMemberOne <- lm(data = perMember_join, formula = total_suicide_rate ~ PercentOne)
+summary(pred_perMemberOne)
+ggplot(perMember_join) +
+  geom_histogram(aes(x = PercentOne))
+
+pred_perMemberTwoOrThree <- lm(data = perMember_join, formula = total_suicide_rate ~ PercentTwoOrThree)
+summary(pred_perMemberTwoOrThree)
+ggplot(perMember_join) +
+  geom_histogram(aes(x = PercentTwoOrThree))
+
+pred_perMemberFourOrFive <- lm(data = perMember_join, formula = total_suicide_rate ~ PercentFourOrFive)
+summary(pred_perMemberFourOrFive)
+ggplot(perMember_join) +
+  geom_histogram(aes(x = PercentFourOrFive))
+
+pred_perMemberSixPlus <- lm(data = perMember_join, formula = total_suicide_rate ~ PercentSixPlus)
+summary(pred_perMemberSixPlus)
+ggplot(perMember_join) +
+  geom_histogram(aes(x = PercentSixPlus))
+
+perOldHead_join <- dbGetQuery(db, "SELECT * FROM perOldHead JOIN suicide_rates ON perOldHead.Country = suicide_rates.Country AND perOldHead.Year = suicide_rates.Year")
+
+pred_perOldHeadSixty<- lm(data = perOldHead_join, formula = total_suicide_rate ~ PercentSixtyPlus)
+summary(pred_perOldHeadSixty)
+ggplot(perOldHead_join) +
+  geom_histogram(aes(x = PercentSixtyPlus))
+
+pred_perOldHeadSixtyfive<- lm(data = perOldHead_join, formula = total_suicide_rate ~ PercentSixtyfivePlus)
+summary(pred_perOldHeadSixtyfive)
+ggplot(perOldHead_join) +
+  geom_histogram(aes(x = PercentSixtyfivePlus))
+
+perYoungHead_join <- dbGetQuery(db, "SELECT * FROM perYoungHead JOIN suicide_rates ON perYoungHead.Country = suicide_rates.Country AND perYoungHead.Year = suicide_rates.Year")
+pred_perYoungHeadTwenty <- lm(data = perYoungHead_join, formula = total_suicide_rate ~ PercentTwentyToSixtyfour)
+summary(pred_perYoungHeadTwenty)
+ggplot(perYoungHead_join) +
+  geom_histogram(aes(x = PercentTwentyToSixtyfour))
+
+pred_perYoungHeadTwentyToSixtyfour <- lm(data = perYoungHead_join, formula = total_suicide_rate ~ PercentTwentyToSixtyfour)
+summary(pred_perYoungHeadTwentyToSixtyfour)
+ggplot(perYoungHead_join) +
+  geom_histogram(aes(x = PercentTwentyToSixtyfour))
+
+perAgeRange_join <- dbGetQuery(db, "SELECT * FROM perAgeRange JOIN suicide_rates ON perAgeRange.Country = suicide_rates.Country AND perAgeRange.Year = suicide_rates.Year")
+
+pred_AgeRange_1 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ OneToFifteen)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = OneToFifteen))
+
+pred_AgeRange_2 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ OneToEighteen)
+summary(pred_AgeRange_2)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = OneToEighteen))
+
+pred_AgeRange_3 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ OnetoTwenty)
+summary(pred_AgeRange_3)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = OnetoTwenty))
+
+pred_AgeRange_4 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ OneToSixty)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = OneToSixty))
+
+pred_AgeRange_5 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ OneToSixtyfive)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = OneToSixtyfive))
+
+pred_AgeRange_6 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ BelowFifteenAboveSixty)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = BelowFifteenAboveSixty))
+
+pred_AgeRange_7 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ BelowFifteenAboveSixtyfive)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = BelowFifteenAboveSixtyfive))
+
+
+pred_AgeRange_8 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ BelowEighteenAboveSixty)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = BelowEighteenAboveSixty))
+
+pred_AgeRange_9 <- lm(data = perAgeRange_join, formula = total_suicide_rate ~ BelowEighteenAboveSixtyfive)
+summary(pred_AgeRange_1)
+ggplot(perAgeRange_join) +
+  geom_histogram(aes(x = BelowEighteenAboveSixtyfive))
+
+my_vis <- function(df) {
+  returnable <- c(as.character(deparse(substitute(df))), as.numeric(summary(df)$coefficients[,"Pr(>|t|)"][2]), as.numeric(summary(df)$r.squared))
+  return(returnable)
+}
+
+summary(pred_anxiety)$coefficients[,"Pr(>|t|)"][2]
+summary(pred_anxiety)
+
+attribute_analysis <- rbind(my_vis(pred_AgeRange_3),
+my_vis(pred_AgeRange_6),
+my_vis(pred_AgeRange_7),
+my_vis(pred_AgeRange_8),
+my_vis(pred_AgeRange_9),
+my_vis(pred_alcohol),
+my_vis(pred_anxiety),
+my_vis(pred_averageHouseSize),
+my_vis(pred_bastardChild),
+my_vis(pred_bipolar),
+my_vis(pred_displacedpersons),
+my_vis(pred_divorce),
+my_vis(pred_drug),
+my_vis(pred_eat),
+my_vis(pred_education_funding),
+my_vis(pred_electricity),
+my_vis(pred_female_life_expectancy),
+my_vis(pred_fertility_rate),
+my_vis(pred_FifteenMinus),
+my_vis(pred_gdp),
+my_vis(pred_globalnatdis),
+my_vis(pred_hdi),
+my_vis(pred_hours_worked),
+my_vis(pred_income_inequality),
+my_vis(pred_infant_mortality_rate),
+my_vis(pred_legal_rights),
+my_vis(pred_male_life_expectancy),
+my_vis(pred_marriage),
+my_vis(pred_marriage_inequality),
+my_vis(pred_meanAgeAtBirth),
+my_vis(pred_mental_total),
+my_vis(pred_other_parent),
+my_vis(pred_perFHead),
+my_vis(pred_perMemberOne),
+my_vis(pred_perMemberTwoOrThree),
+my_vis(pred_perMemberFourOrFive),
+my_vis(pred_perMemberSixPlus),
+my_vis(pred_perOldHeadSixty),
+my_vis(pred_perOldHeadSixtyfive),
+my_vis(pred_perYoungHeadTwenty),
+my_vis(pred_perYoungHeadTwentyToSixtyfour),
+my_vis(pred_pop_density),
+my_vis(pred_pop_growth),
+my_vis(pred_rural_pop),
+my_vis(pred_sad),
+my_vis(pred_schiz),
+my_vis(pred_single_parent),
+my_vis(pred_traffic_mortality),
+my_vis(pred_TwentyMinus),
+my_vis(pred_TwentyToSixtyfour),
+my_vis(pred_two_parents),
+my_vis(pred_unemployment),
+my_vis(pred_urban_pop)
+)
+
+
+
+
+#Determining the values with p-value less than 0.05 and r-squared value of at least 0.1 
+attribute_analysis <- attribute_analysis %>% as.data.frame()
+names(attribute_analysis) <- c("name_of_predictor", "p_value", "r_squared_value")
+attribute_analysis$p_value <- as.character(attribute_analysis$p_value)
+attribute_analysis$p_value <- as.numeric(attribute_analysis$p_value)
+attribute_analysis$r_squared_value <- as.character(attribute_analysis$r_squared_value)
+attribute_analysis$r_squared_value <- as.numeric(attribute_analysis$r_squared_value)
+
+
+attribute_analysis <- attribute_analysis %>% filter(attribute_analysis$p_value < 0.05)
+attribute_analysis <- attribute_analysis %>% filter(attribute_analysis$r_squared_value > 0.1)
+print(attribute_analysis$name_of_predictor)
+View(attribute_analysis)
+
+```
+
+
+
+```{r, linear_model_evaluation}
+#Removing age-related data
+suicide_rates <- arrange(suicide_rates, Country)
+parents <- arrange(parents, Country)
+
+
+mass_join <- dbGetQuery(db, "SELECT * FROM suicide_rates JOIN 
+                        mental ON mental.Country = suicide_rates.Country AND mental.Year =     suicide_rates.Year JOIN 
+                        averageHouseSize ON averageHouseSize.Country = suicide_rates.Country AND averageHouseSize.Year = suicide_rates.Year JOIN 
+                        marriage ON marriage.Country = suicide_rates.Country AND marriage.Year = suicide_rates.Year JOIN 
+                        fertility_rate ON fertility_rate.Country = suicide_rates.Country AND fertility_rate.Year = suicide_rates.Year JOIN 
+                        avgNumByAge ON avgNumByAge.Country = suicide_rates.Country AND avgNumByAge.Year = suicide_rates.Year JOIN 
+                        perFHead ON perFHead.Country = suicide_rates.Country AND perFHead.Year = suicide_rates.Year JOIN 
+                        perMember ON perMember.Country = suicide_rates.Country AND perMember.Year = suicide_rates.Year JOIN 
+                        pop_growth ON pop_growth.Country = suicide_rates.Country AND pop_growth.Year = suicide_rates.Year JOIN 
+                        parents ON parents.Country = suicide_rates.Country AND parents.Year = suicide_rates.Year;")
+
+
+#We have earlier decided not to investigate data regarding age ranges.
+
+mass_join_without_ages <- dbGetQuery(db, "SELECT * FROM suicide_rates JOIN 
+                        mental ON mental.Country = suicide_rates.Country AND mental.Year =     suicide_rates.Year JOIN 
+                        averageHouseSize ON averageHouseSize.Country = suicide_rates.Country AND averageHouseSize.Year = suicide_rates.Year JOIN 
+                        marriage ON marriage.Country = suicide_rates.Country AND marriage.Year = suicide_rates.Year JOIN 
+                        fertility_rate ON fertility_rate.Country = suicide_rates.Country AND fertility_rate.Year = suicide_rates.Year JOIN 
+                        perFHead ON perFHead.Country = suicide_rates.Country AND perFHead.Year = suicide_rates.Year JOIN 
+                        perMember ON perMember.Country = suicide_rates.Country AND perMember.Year = suicide_rates.Year JOIN 
+                        pop_growth ON pop_growth.Country = suicide_rates.Country AND pop_growth.Year = suicide_rates.Year JOIN 
+                        parents ON parents.Country = suicide_rates.Country AND parents.Year = suicide_rates.Year;")
+nrow(mass_join_without_ages)
+```
+
+Noting that there are only 150 observations after the joining of these tables, we decided to separate the training data and the testing data with a 2:1 ratio. This way, we are as close to a 1:1 ratio as possible while still having 100 observations in our training data. Because this group is representing a much larger group of countries across a longer span of years, we will not be removing attributes that do not appear to fit the normal model, because they are likely to fit the larger span of countries and years more appropriately (with the exception of graphs that very strongly indicate a skew or bimodality). Furthermore, because this project is exploring the relationships between suicide_rates and attributes of a country, and there are many factors whose correlation with suicide rate is being considered, we do not think it is appropriate to remove many attributes. There are many factors that affect a person's day-to-day life, and therefore their evaluation of whether or not they want to live, so we should not decide to remove an attribute from the linear model without seeing how it interacts with the other attributes in the linear model. We will judge which distributions to remove less strictly, but we will comment on the shape of all of the distributions and decide which ones to remove.
+We also will not be filtering out outliers, because we do not wish to limit the amount of observations we are working with even further. Because so many countries are represented for such a large span of years (having 2194 observations in the suicide rates data), there are enough values in the database that outliers will not affect data trends grandly. Instead, we will note that a data scientist can remove the outliers either by filtering out values that are three standard deviations greater or less than the mean (if the data is normally modeled) or more than 1.5 times the range of the middle 50% of the data greater than the third quartile or less than the first quartile. We also consider the set of countries and years represented to be too large for us to perform data transformations (such as setting a maximum or minimum value for any of the attributes). Because so many different environments and lives are being represented, it seems innapropriate to make a knowledgeable decision on how to transform it, and thus we will not attempt to.
+These decisions not to change the data in these ways might make our models slightly less accurate, but that is acceptable, because this project is more based on evaluating what attributes for which further research should be done into the lives of individuals, not making accurate predictions of suicide rates based on aspects of a country's culture and demongraphics.
+
+```{r}
+names(mass_join_without_ages)[45] <- "Percent_Female_Head"
+no_t <- (nrow(mass_join_without_ages) * 2) / 3
+no_f <- ((nrow(mass_join_without_ages)) + 2) / 3
+set.seed(100)
+bool_list <- c(rep(TRUE, no_t), rep(FALSE, no_f)) %>% sample()
+mass_join_without_ages_training <- mass_join_without_ages %>% mutate(training = bool_list) %>% filter(training) %>% select(-c("training"))
+mass_join_without_ages_test <- mass_join_without_ages %>% mutate(test = bool_list) %>% filter(!test) %>% select(-c("test"))
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = Alcohol))
+#The data appears to be mostly normally modeled, with some high outliers. 
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = fertility_rate))
+#This data appears to be bimodal (moreso than the other attributes being visualized here), and will therefore not be included in the linear model.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = Divorce))
+#This data is sufficiently normal.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = Percent_Female_Head))
+#This data appears to be bimodal (moreso than the other attributes being visualized here), and will therefore not be included in the linear model.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = PercentOne), bins = 20)
+#Other than the peak at about 22%, this data appears to be fairly normally modeled, with a few outliers around 0%.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = PercentTwoOrThree), bins = 20)
+#This data fits the normal model fairly well, with sharp drop-offs for the tails and a couple high and low outliers.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = PercentFourOrFive), bins = 20)
+#This data fits the normal model fairly well, with sharp drop-offs for the tails and a couple high outliers.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = PercentSixPlus), bins = 30)
+#With the significant outliers, this distribution has a consider right skew, and will not be included in the linear model.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = population_growth))
+#This data appears to fit the normal model well.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = Sad), bins = 15)
+#This data does not appear to fit the normal model incredibly well, but not poorly enough to warrant removing it for our purposes.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = AVGHouseSize))
+#This data appears to be fit normal model well, save for extremely high outliers.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = TwoParents))
+#This data appears to fit normal model fairly well, with slight left bias.
+
+ggplot(data = mass_join_without_ages_training) +
+  geom_histogram(aes(x = SingleParent))
+#This data appears to fit normal model well.
+
+
+```
+
+```{r}
+#iteration 1
+pred_without_age <- lm(formula = total_suicide_rate ~ Alcohol + AVGHouseSize + Divorce + PercentOne + PercentTwoOrThree + PercentFourOrFive + population_growth + Sad + TwoParents + SingleParent, data = mass_join_without_ages_training)
+summary(pred_without_age)
+#adj r squared 0.54
+
+#iteration 2
+pred_without_age <- lm(formula = total_suicide_rate ~ Alcohol + AVGHouseSize + Divorce + PercentOne + PercentTwoOrThree +  population_growth + Sad + TwoParents + SingleParent, data = mass_join_without_ages_training)
+summary(pred_without_age)
+#adj r squared 0.54
+
+#iteration 3
+pred_without_age <- lm(formula = total_suicide_rate ~ Alcohol + AVGHouseSize + Divorce + PercentOne +  population_growth + Sad + TwoParents + SingleParent, data = mass_join_without_ages_training)
+summary(pred_without_age)
+#adj r squared 0.55
+
+#iteration 4
+pred_without_age <- lm(formula = total_suicide_rate ~ AVGHouseSize + Divorce + PercentOne +  population_growth + Sad + TwoParents + SingleParent, data = mass_join_without_ages_training)
+summary(pred_without_age)
+#adj r squared 0.55
+
+#iteration 5
+pred_without_age <- lm(formula = total_suicide_rate ~ AVGHouseSize + Divorce + PercentOne +  population_growth + TwoParents + SingleParent, data = mass_join_without_ages_training)
+summary(pred_without_age)
+#adj r squared 0.54
+
+mass_join_without_ages_test <- mass_join_without_ages_test %>% mutate(estimate = NA)
+mass_join_without_ages_test$estimate <- pred_without_age$coefficients[1] + mass_join_without_ages_test$AVGHouseSize * pred_without_age$coefficients[2] +   mass_join_without_ages_test$Divorce * pred_without_age$coefficients[3] + mass_join_without_ages_test$PercentOne * pred_without_age$coefficients[4] +mass_join_without_ages_test$population_growth * pred_without_age$coefficients[5] +mass_join_without_ages_test$TwoParents * pred_without_age$coefficients[6] +mass_join_without_ages_test$SingleParent * pred_without_age$coefficients[7]
+
+mass_join_without_ages_test_accurate <- mass_join_without_ages_test %>% filter(estimate >= 0.95 * total_suicide_rate)
+mass_join_without_ages_test_accurate <- mass_join_without_ages_test_accurate %>% filter(estimate <= 1.05 * total_suicide_rate)
+
+mass_join_without_ages_test_accurate_2 <- mass_join_without_ages_test %>% filter(estimate >= 0.90 * total_suicide_rate)
+mass_join_without_ages_test_accurate_2 <- mass_join_without_ages_test_accurate_2 %>% filter(estimate <= 1.1 * total_suicide_rate)
+
+mass_join_without_ages_test_accurate_3 <- mass_join_without_ages_test %>% filter(estimate >= 0.80 * total_suicide_rate)
+mass_join_without_ages_test_accurate_3 <- mass_join_without_ages_test_accurate_3 %>% filter(estimate <= 1.2 * total_suicide_rate)
+
+print(nrow(mass_join_without_ages_test_accurate) / nrow(mass_join_without_ages_test))
+print(nrow(mass_join_without_ages_test_accurate_2) / nrow(mass_join_without_ages_test))
+print(nrow(mass_join_without_ages_test_accurate_3) / nrow(mass_join_without_ages_test))
+
+
+
+```
+The model estimated a suicide rate within 5% of the actual suicide rate in approximately 10% of cases, within 10% of the actual suicide rate in approximately 26% of cases, and within 20% of the actual suicide rate in approximately 53% of cases. Although we would hope that the model would predict more accurately than this, this is effective enough for understanding the trend of the relationship these attributes have with the suicide rate, and serves to identify which attributes are worthy of future research. (Indeed, even the process of iterating through linear models as we attempt to make it more accurate is, in a sense, ranking the attributes based on level of indication that there is a relationship worth studying, based on the p-value.)
+
+We will also report the root mean squared error (RMSE), which is the standard deviation of the residual variables.
+
+```{r, RSME}
+#first calculate the residual sum of squares
+rss <- c(crossprod(pred_without_age$residuals))
+
+#calculate the mean squared error from it
+mse <- rss / length(pred_without_age$residuals)
+
+#take the square root to obtain the RMSE
+rmse <- sqrt(mse)
+
+rmse
+```
+
+This is a relatively high RMSE value given the scale of the suicide rates in our data, which testifies to the notion that the model is not incredibly accurate.

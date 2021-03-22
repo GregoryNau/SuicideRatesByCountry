@@ -1,0 +1,263 @@
+---
+title: "WebScrape"
+author: "Nau, Gregory"
+date: "April 11, 2019"
+output: html_document
+---
+
+To run RSelenium I had to install an older version of Chromedriver and put it in my system directory.
+I also had to uninstall all other Chromedriver versions, and Chrome in general for my computer (I shouldn't have needed to, but that is what got it to work)
+So this code may or may not run on your machine.
+
+Sets up the dataframe and library dependencies
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RSelenium)
+library(xml2)
+library(rvest)
+library(dplyr)
+library(naniar)
+
+# Setting up columns
+StructureOfFamilies <- data.frame(matrix(ncol = 10, nrow = 0))
+colnames(StructureOfFamilies) <- c("Country", "Year", "Fertility", "AgeAtBirth", "OutOfWedlock", "Marriage", "Divorce", "TwoParents", "SingleParent", "OtherParent")
+StructureOfFamilies <- StructureOfFamilies %>%
+  mutate(Country = as.factor(Country)) %>%
+  mutate(Year = as.factor(Year)) %>%
+  mutate(Fertility = as.factor(Fertility)) %>%
+  mutate(AgeAtBirth = as.factor(AgeAtBirth)) %>%
+  mutate(OutOfWedlock = as.factor(OutOfWedlock)) %>%
+  mutate(Marriage = as.factor(Marriage)) %>%
+  mutate(Divorce = as.factor(Divorce)) %>%
+  mutate(TwoParents = as.factor(TwoParents)) %>%
+  mutate(SingleParent = as.factor(SingleParent)) %>%
+  mutate(OtherParent = as.factor(OtherParent))
+```
+
+Does the webscraping
+```{r webscrape}
+# Opening Selinium remote server
+rD <- rsDriver(chromever = "73.0.3683.68")
+remDr <- rD$client
+oecdURL <- "https://stats.oecd.org/index.aspx?queryid=68249"
+remDr$navigate(oecdURL)
+
+# loop through all countries in the OECD database
+for (index in 1:50) {
+  
+  # index 37 = Non-OECD Economies, no data avaliable
+  if (index %in% c(37)) {
+    next()
+  }
+  
+  # navigate to new country element
+  countrySelector <- remDr$findElement(using = "id", "PDim_COU")
+  countryOptions <- countrySelector$findChildElements(using = "tag name", "option")
+  countryOptions[[index]]$clickElement()
+  
+  # clean environment
+  rm(countrySelector)
+  rm(countryOptions)
+  
+  # wait for table to load. User presses enter when loaded
+  invisible(readline(prompt="Press [enter] to continue"))
+  
+  # do actual scraping
+  
+  # turns RSelenium page into HTML for RVest
+  html <- read_html(remDr$getPageSource()[[1]])
+
+  # get the avaliable years
+  Year <- vector('character')
+  y <- html %>%
+    html_nodes(xpath = '//*[@class="DataTable"]//*[@class="HDim"]')
+  num <- length(y)/2
+  for (x in 1:num) {
+    Year <- append(Year, html_text(y[[x]]))
+  }
+  rm(y)
+  
+  # pull this country name
+  Country <- vector('character')
+  c <- html %>%
+    html_nodes(xpath = '//*[@id="PDim_COU"]/option')
+  for (x in 1:num) {
+    Country <- append(Country, html_text(c[[index]]))
+  }
+  rm(c)
+  
+  # get the avaliable fertility rates
+  Fertility <- vector('character')
+  f <- html %>%
+    html_nodes(xpath = '//*[@id="row1"]//*[@class="Data"]')
+  for (x in 1:num) {
+    Fertility <- append(Fertility, html_text(f[[x]]))
+  }
+  rm(f)
+  
+  # get the age of mothers at birth
+  AgeAtBirth <- vector('character')
+  a <- html %>%
+    html_nodes(xpath = '//*[@id="row2"]//*[@class="Data2"]')
+  if (length(a) == 0) {
+    for (x in 1:num) {
+      AgeAtBirth <- append(AgeAtBirth, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      AgeAtBirth <- append(AgeAtBirth, html_text(a[[x]]))
+    }
+  }
+  rm(a)
+  
+  # get the unmarried births
+  OutOfWedlock <- vector('character')
+  o <- html %>%
+    html_nodes(xpath = '//*[@id="row3"]//*[@class="Data"]')
+  if (length(o) == 0) {
+    for (x in 1:num) {
+      OutOfWedlock <- append(OutOfWedlock, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      OutOfWedlock <- append(OutOfWedlock, html_text(o[[x]]))
+    }
+  }
+  rm(o)
+  
+  # get the marriage rate
+  Marriage <- vector('character')
+  m <- html %>%
+    html_nodes(xpath = '//*[@id="row4"]//*[@class="Data2"]')
+  if (length(m) == 0) {
+    for (x in 1:num) {
+      Marriage <- append(Marriage, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      Marriage <- append(Marriage, html_text(m[[x]]))
+    }
+  }
+  rm(m)
+  
+  # get the divorce rate
+  Divorce <- vector('character')
+  d <- html %>%
+    html_nodes(xpath = '//*[@id="row5"]//*[@class="Data"]')
+  if (length(d) == 0) {
+    for (x in 1:num) {
+      Divorce <- append(Divorce, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      Divorce <- append(Divorce, html_text(d[[x]]))
+    }
+  }
+  rm(d)
+  
+  # get the raised by 2 parents
+  TwoParents <- vector('character')
+  t <- html %>%
+    html_nodes(xpath = '//*[@id="row6"]//*[@class="Data2"]')
+  if (length(t) == 0) {
+    for (x in 1:num) {
+      TwoParents <- append(TwoParents, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      TwoParents <- append(TwoParents, html_text(t[[x]]))
+    }
+  }
+  rm(t)
+  
+  # get the raised by 1 parent
+  SingleParent <- vector('character')
+  s <- html %>%
+    html_nodes(xpath = '//*[@id="row7"]//*[@class="Data"]')
+  if (length(s) == 0) {
+    for (x in 1:num) {
+      SingleParent <- append(SingleParent, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      SingleParent <- append(SingleParent, html_text(s[[x]]))
+    }
+  }
+  rm(s)
+  
+  # get the raised by other parents
+  OtherParent <- vector('character')
+  n <- html %>%
+    html_nodes(xpath = '//*[@id="row8"]//*[@class="Data2"]')
+  if (length(n) == 0) {
+    for (x in 1:num) {
+      OtherParent <- append(OtherParent, NA)
+    }
+  } else {
+    for (x in 1:num) {
+      OtherParent <- append(OtherParent, html_text(n[[x]]))
+    }
+  }
+  rm(n)
+  
+  # garbage collection
+  rm(x)
+  
+  # add the data to the dataframe
+  temp <- data.frame(Country, Year, Fertility, AgeAtBirth, OutOfWedlock, Marriage, Divorce, SingleParent, TwoParents, OtherParent)
+  StructureOfFamilies <- full_join(StructureOfFamilies, temp)
+  
+  # garbage collection
+  rm(temp)
+  rm(AgeAtBirth)
+  rm(Country)
+  rm(Divorce)
+  rm(Fertility)
+  rm(Marriage)
+  rm(OtherParent)
+  rm(OutOfWedlock)
+  rm(SingleParent)
+  rm(TwoParents)
+  rm(Year)
+  rm(num)
+  
+}
+
+# Closing Selinium remote server
+rD[["server"]]$stop()
+
+# garbage collection
+rm(html)
+rm(oecdURL)
+rm(rD)
+rm(remDr)
+rm(index)
+```
+
+Cleans the oddities in the dataframe and saves it to a csv
+```{r clean}
+# fix China being weird (AgeAtBirth = Marriage, OutOfWedlock = Divorce)
+china <- StructureOfFamilies %>%
+  filter(grepl("China", Country))
+StructureOfFamilies <- StructureOfFamilies %>%
+  filter(!grepl("China", Country))
+china <- china %>%
+  rename("m" = AgeAtBirth) %>%
+  rename("d" = OutOfWedlock) %>%
+  rename("a" = Marriage) %>%
+  rename("o" = Divorce)
+china <- china %>%
+  rename("Marriage" = m) %>%
+  rename("Divorce" = d) %>%
+  rename("AgeAtBirth" = a) %>%
+  rename("OutOfWedlock" = o)
+StructureOfFamilies <- full_join(StructureOfFamilies, china)
+rm(china)
+
+# turn "" into NA
+StructureOfFamilies <- StructureOfFamilies %>%
+  replace_with_na_all(condition = ~.x == "..")
+
+# writes to csv for ease of stuff
+write.csv(StructureOfFamilies, file = "StructureOfFamilies.csv")
+```

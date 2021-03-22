@@ -1,0 +1,139 @@
+---
+title: "RemoveTrailingNA"
+author: "Nau, Gregory"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+```{r removeTrailingNA}
+# Excepts a column named 'Country' and 'Year'
+# Will remove all trailing NAs in the 3rd column
+removeTrailingNA <- function(data) {
+  
+  # Gets a vector of all unique country names
+  countries <- unique(data$Country)
+  
+  # Creates a data frame to return
+  ans <- data[0,] %>%
+    select(Country, Year)
+  
+  # loops through all countries
+  for (c in countries) {
+    
+    # Get a dataframe with only a single country
+    onecountry <- data %>%
+      filter(Country == c)
+    
+    # Remove all rows with NA values
+    c <- str_trim(c)
+    nona <- onecountry %>%
+      drop_na()
+    
+    # Getting the first year and last year
+    if (length(nona$Year) == 0) {
+      next
+    } else {
+      nona <- nona %>%
+        arrange(Year)
+      first <- nona$Year[[1]]
+      last <- nona$Year[[length(nona$Year)]]
+    }
+    
+    # Getting a vector of all years between first and last
+    years <- vector('numeric')
+    country <- vector('character')
+    for (y in first:last) {
+      years <- years %>%
+        append(y)
+      country <- country %>%
+        append(c)
+    }
+    
+    # Transforming Country so that it matches early transformation
+    nona$Country <- str_trim(nona$Country)
+    
+    # Adding back in-between NA values
+    addedBack <- full_join(nona, data.frame(country, years), by = c("Year" = "years", "Country" = "country"))
+    
+    # Adding solution into the returnable value
+    ans <- rbind(ans, addedBack %>%
+                   # sorting by Year
+                   arrange(Year) %>%
+                   # imputing values
+                   my_impute())
+    
+    # Garbage collection
+    rm(onecountry)
+    rm(nona)
+    rm(first)
+    rm(last)
+    rm(y)
+    rm(addedBack)
+  }
+  
+  ans <- ans %>%
+    arrange(Country, Year) %>%
+    filter(!(Year == 0))
+  return(ans)
+  
+  # Garbage collection
+  rm(countries)
+  rm(x)
+  rm(ans)
+}
+```
+
+```{r removeTrailingNA_All}
+# Removes the trailing NAs for all columns in a matrix (other than Country and Year)
+# Imputes inbetween NAs
+# Will then recombine them all together and drop remaining NA values
+removeTrailingNA_All <- function(data) {
+  
+  # Gather column names
+  names <- data %>%
+    select(-Country, -Year) %>%
+    colnames()
+  
+  # Get answer form
+  ans <- data[0,] %>%
+    select(Country, Year)
+  
+  # Loop through each column
+  for (i in 1:length(names)) {
+    
+    # Get the three columns needed
+    threecol <- data %>%
+      select(Country, Year, names[[i]])
+    
+    # Remove trailing NAs and impute over the column
+    imputed <- threecol %>%
+      removeTrailingNA()
+    
+    # add new values into answer
+    ans <- ans %>%
+      full_join(imputed, by = c("Country", "Year"))
+    
+    # Garbage Collection
+    rm(threecol)
+    rm(imputed)
+  }
+  
+  # drop remaining NA values
+  ans <- ans %>%
+    drop_na()
+  
+  return(ans)
+  
+  # Garbage Collection
+  rm(names)
+  rm(c)
+  rm(ans)
+}
+```

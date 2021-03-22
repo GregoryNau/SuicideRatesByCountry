@@ -1,0 +1,507 @@
+---
+title: "DataSets"
+author: "Nau, Gregory"
+date: "April 11, 2019"
+output: pdf_document
+---
+
+removeTrailingNA and removeTrailingNA_All should be in global environment. Located in RemoveTrailingNA.Rmd
+my_impute should be in global environment. Located in my_impute.r
+averageDuplicateData should be in global environment. Located in AverageDuplicateData.Rmd
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo=FALSE, comment=NA, mesage=FALSE, warning=FALSE)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(readxl)
+library(lubridate)
+library(naniar)
+
+
+myread <- function(str, fun, suf) {
+  return(fun(paste(str, suf, sep = "")))
+}
+
+# reads a csv file of given name
+mycsvread <- function(name) {
+  read.csv(paste0(name, "csv"))
+}
+
+# reads a xlsx file of a given name
+myxlxsread <- function(name, head = FALSE) {
+  return(myread(str = name, fun = read_xlsx, suf = ".xlsx"))
+}
+
+# returns only valid years
+yearclean <- function(d) { 
+  return(filter(d, Year > 1984 & Year < 2017))
+}
+
+# get the country code
+countryCode <- read.csv("education_funding.csv") %>%
+  select(1,2)
+names(countryCode) <- c("Country", "Code")
+countryCode <- countryCode[-(1:2),]
+
+cleancountry_greg <- function(data) {
+  return(data %>%
+           mutate(Country = replace(Country, Country == 'United States of America', 'United States')) %>%
+           mutate(Country = replace(Country, Country == 'Bolivia (Plurinational State of)', 'Bolivia')) %>%
+           mutate(Country = replace(Country, Country == 'Congo', 'Congo, Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'Dem. Republic of the Congo', 'Congo, Dem. Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'China, Hong Kong SAR', 'Hong Kong SAR, China')) %>%
+           mutate(Country = replace(Country, Country == 'China, Macao SAR', 'Macao SAR, China')) %>%
+           mutate(Country = replace(Country, Country == "Cote d'Ivoire", "Côte d'Ivoire")) %>%
+           mutate(Country = replace(Country, Country == 'Czechia', 'Czech Republic')) %>%
+           mutate(Country = replace(Country, Country == 'Egypt', 'Egypt, Arab Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'Gambia', 'Gambia, The')) %>%
+           mutate(Country = replace(Country, Country == 'Iran (Islamic Republic of)', 'Iran, Islamic Rep. ')) %>%
+           mutate(Country = replace(Country, Country == 'Korea', 'Korea, Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'Macedonia', 'Macedonia, FYR')) %>%
+           mutate(Country = replace(Country, Country == 'Burma', 'Myanmar')) %>%
+           mutate(Country = replace(Country, Country == 'Syria', 'Syrian Arab Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'United Republic of Tanzania', 'Tanzania')) %>%
+           mutate(Country = replace(Country, Country == 'Venezuela (Bolivarian Republic of)', 'Venezuela, RB')) %>%
+           mutate(Country = replace(Country, Country == 'Yemen', 'Yemen, Rep.')) %>%
+           mutate(Country = replace(Country, Country == 'Viet Name', 'Vietnam')) %>%
+           filter(str_trim(Country) %in% countryCode$Country))
+}
+
+# unneeded countries
+cleancountry <- function(data) {
+  data$Country <- as.character(data$Country)
+  for (i in 1:nrow(data)) {
+    str <- data$Country[i]
+    if (str == "Egypt") {
+      data$Country[i] <- "Egypt, Arab Rep."
+    } else if (str == "United States of America") {
+      data$Country[i] <- "United States"
+    } else if (str == "Bolivia (Plurinational Stat of)") {
+      data$Country[i] <- "Bolivia."
+    } else if (str == "Congo") {
+      data$Country[i] <- "Congo, Rep."
+    } else if (str == "Dem. Republic of the Congo") {
+      data$Country[i] <- "Congo, Dem. Rep."
+    } else if (str == "China, Hong Kong SAR") {
+      data$Country[i] <- "Hong Kong SAR, China."
+    } else if (str == "China, Macao SAR") {
+      data$Country[i] <- "Macao SAR, China"
+    } else if (str == "Cote d'Ivoire") {
+      data$Country[i] <- "Ivory Coast"
+    } else if (str == "Czechia") {
+      data$Country[i] <- "Czech Republic."
+    } else if (str == "Gambia") {
+      data$Country[i] <- "Gambia, The"
+    } else if (str == "Iran (Islamic Republic of)") {
+      data$Country[i] <- "Iran, Islamic Rep."
+    } else if (str == "Korea") {
+      data$Country[i] <- "Korea, Rep."
+    } else if (str == "Macedonia") {
+      data$Country[i] <- "Macedonia, FYR"
+    } else if (str == "Burma") {
+      data$Country[i] <- "Myanmar"
+    } else if (str == "Syria") {
+      data$Country[i] <- "Syrian Arab Rep."
+    } else if (str == "United Republic of Tanzania") {
+      data$Country[i] <- "Tanzania"
+    } else if (str == "Venezuela (Bolivarian Republic of)") {
+      data$Country[i] <- "Venezuela, RB"
+    } else if (str == "Yemen") {
+      data$Country[i] <- "Yemen, Rep."
+    } else if (str == "Viet name") {
+      data$Country[i] <- "Vietnam"
+    } 
+  }
+}
+```
+
+```{r Mental}
+# cleans the gendered mental datasets
+
+mentalclean <- function(new, main, nick) {
+  # clean
+  temp <- new %>%
+    yearclean() %>%
+    select(-"Total.population..Gapminder.")
+  # rename
+  colnames(temp)[4] <- paste(nick, "M", sep = "")
+  colnames(temp)[5] <- paste(nick, "F", sep = "")
+  # join
+  jointemp <- left_join(main, temp)
+  # rearrange
+  index <- match(nick, colnames(jointemp))
+  mylen <- length(colnames(jointemp))
+  jointemp <- jointemp[,c(1:index, (mylen - 1):mylen, (index + 1):(mylen - 2))]
+  return(jointemp)
+  # garbage collection
+  rm(temp)
+  rm(jointemp)
+  rm(index)
+  rm(mylen)
+}
+# clean generic mental data
+share_with_mental_mvf <- read.csv("share-with-mental-or-substance-disorders-males-vs-females.csv")
+share_with_mental <- read.csv("share-with-mental-and-substance-disorders.csv")
+prev_with_mental <- read.csv("prevalence-by-mental-and-substance-use-disorder.csv")
+# removes unnessary years and the population column
+swmmvf_year_corrected<- share_with_mental_mvf %>%
+  yearclean() %>%
+  select(-"Total.population..Gapminder.")
+# join them all together by "Entity", "Code", "Year"
+mental <- left_join(left_join(swmmvf_year_corrected, share_with_mental), prev_with_mental)
+# clean environment
+rm(share_with_mental_mvf)
+rm(prev_with_mental)
+rm(share_with_mental)
+rm(swmmvf_year_corrected)
+# rename columns
+mental <- mental %>%
+  rename("%Male" = "Share.of.males....") %>%
+  rename("%Female" = "Share.of.females....") %>%
+  rename("%Pop" = "Prevalence...Mental.and.substance.use.disorders...Sex..Both...Age..Age.standardized..Percent.....") %>%
+  rename("%Schiz" = "Schizophrenia....") %>%
+  rename("%Bipolar" = "Bipolar.disorder....") %>%
+  rename("%Eat" = "Eating.disorders....") %>%
+  rename("%Anxiety" = "Anxiety.disorders....") %>%
+  rename("%Drug" = "Drug.use.disorders....") %>%
+  rename("%Sad" = "Depression....") %>%
+  rename("%Alcohol" = "Alcohol.use.disorders....")
+
+# add gendered data
+mental <- read.csv("prevalence-of-depression-males-vs-females.csv") %>%
+  mentalclean(mental, "%Sad")
+mental <- read.csv("prevalence-of-depression-males-vs-females.csv") %>%
+  mentalclean(mental, "%Bipolar")
+mental <- read.csv("prevalence-of-anxiety-disorders-males-vs-females.csv") %>%
+  mentalclean(mental, "%Anxiety")
+mental <- read.csv("prevalence-of-eating-disorders-in-males-vs-females.csv") %>%
+  mentalclean(mental, "%Eat")
+mental <- read.csv("prevalence-of-schizophrenia-in-males-vs-females.csv") %>%
+  mentalclean(mental, "%Schiz")
+mental <- read.csv("share-with-mental-or-substance-disorders-males-vs-females.csv") %>%
+  mentalclean(mental, "%Drug")
+
+# change column name
+mental <- mental %>%
+  rename("Country" = "Entity")
+
+# clean unneeded functions
+rm(mentalclean)
+
+# remove unneeded countries
+mental <- cleancountry_greg(mental)
+
+# Mental cleanup
+mental <- mental %>%
+  select(-Code) %>%
+  removeTrailingNA_All()
+
+# Sort
+mental <- mental %>%
+  arrange(Country, Year)
+
+# Save CSV
+write.csv(mental, file = "Mental.csv")
+```
+
+```{r HDI}
+
+# human development index
+hdi <- read.csv("Human development index (HDI).csv")
+hdi <- select(hdi, -"HDI.Rank..2017.", "X2017")
+cols <- colnames(hdi)
+cols <- cols[2:29]
+cols <- substring(cols, 2)
+for (i in 1:28) {
+  colnames(hdi)[i + 1] <- cols[i]
+}
+hdi <- gather(hdi, key = "year", value = "hdi", c(2:29)) %>%
+  arrange(Country, year)
+# standardazing 'year' col name
+hdi <- hdi %>%
+  rename("Year" = "year")
+# garbage collection
+rm(cols)
+rm(i)
+
+# remove unneeded countries
+hdi <- cleancountry_greg(hdi)
+
+# sort data
+hdi <- hdi %>%
+  arrange(Country, Year)
+
+# standardizing so that there are no NAs
+hdi$Year <- as.numeric(hdi$Year)
+hdi <- hdi %>%
+  removeTrailingNA()
+
+# categorizing HDI
+# 'Very High' >= 0.8
+# 'High' >= 0.7
+# 'Medium' >= 0.55
+# 'Low' >= 0.3
+# 'Very Low' >= 0
+v <- hdi %>%
+  filter(hdi >= 0.8)
+v['Category'] <- 'Very High'
+h <- hdi %>%
+  filter((hdi < 0.8) & (hdi >= 0.7))
+h['Category'] <- 'High'
+m <- hdi %>%
+  filter((hdi < 0.7) & (hdi >= 0.55))
+m['Category'] <- 'Medium'
+l <- hdi %>%
+  filter((hdi < 0.55) & (hdi >= 0.3))
+l['Category'] <- 'Low'
+s <- hdi %>%
+  filter(hdi < 0.3)
+s['Category'] <- 'Very Low'
+hdi <- rbind(v, h, m, l, s) %>%
+  arrange(Country, Year)
+hdi$Category <- factor(hdi$Category, levels = c('Very Low', 'Low', 'Medium', 'High', 'Very High'))
+# Garbage Collection
+rm(v)
+rm(h)
+rm(m)
+rm(l)
+rm(s)
+
+# Save CSV
+write.csv(hdi, file = "HDI.csv")
+```
+
+```{r HouseholdDemographics}
+# household demographics
+
+housedemo <- read_xlsx("population_division_UN_Houseshold_Size_and_Composition_2018.xlsx", sheet = "UN HH Size and Composition 2018")
+colnames(housedemo)[1] <- "Country"
+housedemo <- housedemo %>%
+  rename("ISO" = "X__2") %>%
+  rename("DSCat" = "X__3") %>%
+  rename("date" = "X__4") %>%
+  rename("AVGHouseSize" = "X__5") %>%
+  rename("%of1Member" = "X__6") %>%
+  rename("%of2-3Member" = "X__7") %>%
+  rename("%of4-5Member" = "X__8") %>%
+  rename("%of6+Member" = "X__9") %>%
+  rename("%FHead" = "X__10") %>%
+  rename("%20-Head" = "X__11") %>%
+  rename("%20-64Head" = "X__12") %>%
+  rename("%60+Head" = "X__13") %>%
+  rename("%65+Head" = "X__14") %>%
+  rename("%1<=15-" = "X__15") %>%
+  rename("%1<=18-" = "X__16") %>%
+  rename("%1<=20-" = "X__17") %>%
+  rename("%1<=60+" = "X__18") %>%
+  rename("%1<=65+" = "X__19") %>%
+  rename("%15-&&60+" = "X__20") %>%
+  rename("%15-&&65+" = "X__21") %>%
+  rename("%18-&&60+" = "X__22") %>%
+  rename("%18-&&65+" = "X__23") %>%
+  rename("%20-&&60+" = "X__24") %>%
+  rename("%20-&&65+" = "X__25") %>%
+  rename("AvgNum15-" = "X__26") %>%
+  rename("AvgNum15-Sib" = "X__27") %>%
+  rename("AvgNum20-" = "X__28") %>%
+  rename("AvgNum20-Sib" = "X__29") %>%
+  rename("AvgNum20-64" = "X__30") %>%
+  rename("%Alone&Unloved" = "X__31") %>%
+  rename("%CoupleOnly" = "X__32") %>%
+  rename("%CoupleW/Kids" = "X__33") %>%
+  rename("%SingleParent" = "X__34") %>%
+  rename("%SingleMom" = "X__35") %>%
+  rename("%SingleDad" = "X__36") %>%
+  rename("%ExtendedFam" = "X__37") %>%
+  rename("%NonRelative" = "X__38") %>%
+  rename("%Unknown" = "X__39")
+housedemo <- select(housedemo, 1:39)
+housedemo <- housedemo[-(1:4),]
+housedemo$date <- year(as.Date(as.numeric(housedemo$date), origin = "1899-12-30"))
+housedemo <- rename(housedemo, "Year" = "date")
+housedemo <- yearclean(housedemo)
+
+# remove unneeded countries
+housedemo <- cleancountry_greg(housedemo)
+
+# Standardizing housedemo
+
+#Note: the code immediately below this comment did not work on Jay's machine, citing the error:
+#Error: `x`is empty, and no `.init. supplied
+#but it worked on Greg's machine. Jay Sherman was using dplyr version 0.7.8 (and was unable to update), and Greg was using dplyr version 0.8.0.1. We deemed this to be the root of the issue, but were unable to fix it. There were other similar issues to code having different effects on the user's different machines, most notably the way that reading in from a csv would name tables if not given a well-formed name, but the code was tailored to work on Jay's machine. This and the webscraper where such tailoring proved impossible.
+housedemo <- housedemo %>%
+  replace_with_na_all(condition = ~.x == "..") %>%
+  replace_with_na_all(condition = ~.x == 0)
+housedemo <- housedemo %>%
+  select(-ISO, -DSCat)
+# Remove duplicate country-years
+housedemo <- housedemo %>%
+  averageDuplicateData()
+# Split into smaller data sets
+# AvgHouseSize
+averageHouseSize <- housedemo %>%
+  select(Country, Year, AVGHouseSize) %>%
+  removeTrailingNA_All()
+# PerMember
+perMember <- housedemo %>%
+  select(Country, Year, '%of1Member', '%of2-3Member', '%of4-5Member', '%of6+Member') %>%
+  removeTrailingNA_All()
+# PerFHead setup
+perFHead <- housedemo %>%
+  select(Country, Year, "%FHead") %>%
+  removeTrailingNA()
+# PerYoungHead setup
+perYoungHead <- housedemo %>%
+  select(Country, Year, '%20-Head', '%20-64Head') %>%
+  removeTrailingNA_All()
+# PerOldHead setup
+perOldHead <- housedemo %>%
+  select(Country, Year, '%60+Head', '%65+Head') %>%
+  removeTrailingNA_All()
+# PerAgeRange setup
+perAgeRange <- housedemo %>%
+  select(Country, Year, '%1<=15-', '%1<=18-', '%1<=60+', '%15-&&60+', '%15-&&65+', '%18-&&60+', '%18-&&65+', '%20-&&60+', '%20-&&65+') %>%
+  removeTrailingNA_All()
+# AvgNumByAge setup
+avgNumByAge <- housedemo %>%
+  select(Country, Year, 'AvgNum15-', 'AvgNum15-Sib', 'AvgNum20-', 'AvgNum20-Sib', 'AvgNum20-64') %>%
+  removeTrailingNA_All()
+# PerFamDemo setup
+perFamDemo <- housedemo %>%
+  select(Country, Year, '%Alone&Unloved', '%CoupleOnly', '%CoupleW/Kids', '%SingleParent', '%SingleMom', '%SingleDad', '%ExtendedFam', '%NonRelative') %>%
+  removeTrailingNA_All()
+rm(housedemo)
+
+# Sort data
+averageHouseSize <- averageHouseSize %>%
+  arrange(Country, Year)
+avgNumByAge <- avgNumByAge %>%
+  arrange(Country, Year)
+perAgeRange <- perAgeRange %>%
+  arrange(Country, Year)
+perFamDemo <- perFamDemo %>%
+  arrange(Country, Year)
+perFHead <- perFHead %>%
+  arrange(Country, Year)
+perMember <- perMember %>%
+  arrange(Country, Year)
+perOldHead <- perOldHead %>%
+  arrange(Country, Year)
+perYoungHead <- perYoungHead %>%
+  arrange(Country, Year)
+
+# Save CSV
+write.csv(averageHouseSize, file = "AverageHouseSize.csv")
+write.csv(avgNumByAge, file = "AvgNumByAge.csv")
+write.csv(perAgeRange, file = "PerAgeRange.csv")
+write.csv(perFamDemo, file = "PerFamDemo.csv")
+write.csv(perFHead, file = "PerFemaleHead.csv")
+write.csv(perMember, file = "PerFamilyMember.csv")
+write.csv(perOldHead, file = "PerOldHead.csv")
+write.csv(perYoungHead, file = "PerYoungHead.csv")
+```
+
+```{r GlobalNaturalDisaster}
+
+
+# global natural disaster cleaning
+globalnatdis <- read.csv("number-of-deaths-from-natural-disasters.csv")
+globalnatdis <- globalnatdis %>%
+  rename("Raw Death #" = "Global.deaths.from.natural.disasters..deaths.") %>%
+  select(-"Code") %>%
+  yearclean()
+temp <- read.csv("natural-disaster-death-rates.csv")
+temp <- temp %>%
+  rename("Death Rate" = "Global.death.rates.from.natural.disasters..per.100.000.") %>%
+  select(-"Code") %>%
+  yearclean()
+globalnatdis <- left_join(globalnatdis, temp)
+rm(temp)
+
+# Save CSV
+write.csv(globalnatdis, file = "GlobalNatDis.csv")
+```
+
+```{r DisplacedPersons}
+
+
+# displaced persons
+displacedpersons <- read.csv("internally-displaced-persons-from-disasters.csv")
+displacedpersons <- displacedpersons %>%
+  rename("Displaced Persons" = "Internally.displaced.persons..new.displacement.associated.with.disasters..number.of.cases...number.of.cases.") %>%
+  rename("Country" = "Entity") %>%
+  yearclean()
+displacedpersons <- displacedpersons %>%
+  select(-Code)
+
+# removing unneeded countries
+displacedpersons <- cleancountry_greg(displacedpersons)
+
+# Sort 
+displacedpersons <- displacedpersons %>%
+  arrange(Country, Year)
+
+# Save CSV
+write.csv(displacedpersons, file = "DisplacedPersons.csv")
+```
+
+```{r StructureOfFamilies}
+
+
+# oecd webscraped csv
+StructureOfFamilies <- read.csv("StructureOfFamilies.csv") %>%
+  select(-X) %>%
+  yearclean() %>%
+  cleancountry_greg()
+
+# StructureOfFamilies split and cleanup
+fertility <- StructureOfFamilies %>%
+  select(Country, Year, Fertility) %>%
+  removeTrailingNA()
+meanAgeAtBirth <- StructureOfFamilies %>%
+  select(Country, Year, AgeAtBirth) %>%
+  removeTrailingNA()
+bastardChild <- StructureOfFamilies %>%
+  select(Country, Year, OutOfWedlock) %>%
+  removeTrailingNA()
+marriage <- StructureOfFamilies %>%
+  select(Country, Year, Marriage, Divorce) %>%
+  removeTrailingNA_All()
+parents <- StructureOfFamilies %>%
+  select(Country, Year, TwoParents, SingleParent, OtherParent) %>%
+  removeTrailingNA_All()
+rm(StructureOfFamilies)
+
+# Sort data
+bastardChild <- bastardChild %>%
+  arrange(Country, Year)
+fertility <- fertility %>%
+  arrange(Country, Year)
+marriage <- marriage %>%
+  arrange(Country, Year)
+meanAgeAtBirth <- meanAgeAtBirth %>%
+  arrange(Country, Year)
+parents <- parents %>%
+  arrange(Country, Year)
+
+# Save CSV
+write.csv(bastardChild, file = "BastardChild.csv")
+write.csv(fertility, file = "Fertility.csv")
+write.csv(marriage, file = "Marriage.csv")
+write.csv(meanAgeAtBirth, file = "MeanAgeAtBirth.csv")
+write.csv(parents, file = "Parents.csv")
+```
+
+```{r GarbageCollection}
+rm(fileloc)
+rm(mycsvread)
+rm(myxlxsread)
+rm(myread)
+rm(yearclean)
+rm(countryCode)
+rm(cleancountry_greg)
+rm(averageDuplicateData)
+rm(removeTrailingNA)
+rm(removeTrailingNA_All)
+rm(my_impute)
+```
