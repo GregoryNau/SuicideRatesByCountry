@@ -5,14 +5,9 @@ You can use the [editor on GitHub](https://github.com/GregoryNau/SuicideRatesByC
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
 ### Markdown
-hi
-
-<a href="gregorynau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" target="_blank">PDF</a>
-
-<a href="VisualPlayground.pdf" class="image fit"><img src="images/marr_pic.jpg" alt=""></a>
 
 [PDF VisualPlayground](https://github.com/GregoryNau/SuicideRatesByCountry/blob/main/VisualPlayground.pdf)
-<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" type="application/pdf" />
+<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" width="1000" height="1000" type="application/pdf" />
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
