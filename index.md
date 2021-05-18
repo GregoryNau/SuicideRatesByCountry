@@ -7,7 +7,7 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 ### Markdown
 
 [PDF VisualPlayground](https://github.com/GregoryNau/SuicideRatesByCountry/blob/main/VisualPlayground.pdf)
-<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" width="1000" height="1000" type="application/pdf" />
+<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" width="666" height="900" type="application/pdf" />
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
