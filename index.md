@@ -7,6 +7,8 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 ### Markdown
 hi
 
+<a href="gregorynau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" target="_blank">PDF</a>
+
 <a href="VisualPlayground.pdf" class="image fit"><img src="images/marr_pic.jpg" alt=""></a>
 
 [PDF VisualPlayground](https://github.com/GregoryNau/SuicideRatesByCountry/blob/main/VisualPlayground.pdf)
