@@ -6,8 +6,11 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 
 ### Markdown
 
+<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/SuicideRatesDataProjectReport.pdf" width="650" height="850" type="application/pdf" />
+[PDF ProjectReport](https://github.com/GregoryNau/SuicideRatesByCountry/blob/main/SuicideRatesDataProjectReport.pdf)
+
+<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" width="650" height="850" type="application/pdf" />
 [PDF VisualPlayground](https://github.com/GregoryNau/SuicideRatesByCountry/blob/main/VisualPlayground.pdf)
-<embed src="https://GregoryNau.github.io/SuicideRatesByCountry/VisualPlayground.pdf" width="650" height="825" type="application/pdf" />
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
