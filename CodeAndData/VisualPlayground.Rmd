@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-setwd("C:/Users/Jay/Documents/Sophomore Year Northeastern University/DS 4100/Final Project/Online Datasets")
+#setwd("C:/Users/Jay/Documents/Sophomore Year Northeastern University/DS 4100/Final Project/Online Datasets")
 myCleanRead <- function(x) {
   str <- paste( x, ".csv", sep = '')
 print (str)
@@ -55,7 +55,7 @@ ggplot(data = inner_join(parents, suicideRates), aes(x = SingleParent)) +
                      values = c("Total"="black", "Male"="blue", "Female"="red"))
 ```
 
-
+\newpage
 Looking at the following plot shows that rates of living alone have a steady rate on increasing male suicide rate, but not much for female suicide
 
 ```{r LivingAlonesEffectOnSuicideRates, echo=FALSE}
@@ -73,7 +73,7 @@ ggplot(data = inner_join(perFamDemo, suicideRates), aes(x=X.Alone.Unloved)) +
                      values = c("Total"="black", "Male"="blue", "Female"="red"))
 ```
 
-
+\newpage
 Looking at the following plot shows that increased GDP per capita reduces suicide rates across the board, though once out of poverty, has almost no effect
 
 ```{r GDPPerCapitaSuicideRates, echo=FALSE}
@@ -84,7 +84,7 @@ ggplot(data = inner_join(suicideRates, hdi)) +
        x = "GDP Per Capita", y = "Suicide Rate (%)")
 ```
 
-
+\newpage
 Looking at the following plot shows that suicide rates increase as countries develope, but not by a significant amount
 
 ```{r HDI, echo=FALSE}
@@ -95,7 +95,7 @@ ggplot(data = inner_join(suicideRates, hdi), aes(x=hdi, y=total_suicide_rate)) +
        x = "HDI", y = "Total Suicide Rate (%)")
 ```
 
-
+\newpage
 Looking at the following plot shows that eating disorders have almost no correlation to suicide rates on either sex.
 
 ```{r Eat, echo=FALSE}
@@ -114,7 +114,7 @@ ggplot(data = inner_join(mental, suicideRates)) +
 ```
 
 
-
+\newpage
 Formal Visualizations
 
 Male vs Female Suicide Rates:
@@ -143,7 +143,7 @@ rm(theseSuicideRates)
 rm(numOfObs)
 ```
 
-
+\newpage
 Correlation of Divorce Rates and Suicide Rates:
 This faceted scatter plot displays the divorce rate as a percent of the population that is divorced, to the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. The facets divide the scatter plot into different levels of human development according to the Human Development Index. As we can see there is a strong trend that as divorce rates increase, suicide rates do as well. However, it is clear that this trend is much more pronounced in lesser developed countries. This may suggest that divorce is more normal in very high developed countries and that there are better societal structures in place to deter suicide in this instance. 
 
@@ -192,7 +192,7 @@ rm(veryHigh)
 rm(totalSuicideDivorce)
 ```
 
-
+\newpage
 Correlation of Population Growth and Suicide Rate :
 This scatter plot displaces the anual percent of population growth with the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. This plot shows a strong trend that at low rates of population growth that higher rates deter suicide. Due to the majority of reporting countries being at very low population growths, the higher rates (higher than 7% population growth) were extremely under represented and were removed as outliers.
 
@@ -219,7 +219,7 @@ rm(totalSuicidePopGrowth)
 rm(numOfObs)
 ```
 
-
+\newpage
 Correlation of Depression and Suicide Rates:
 This scatter plot displays the Depression rate as a percentage of the population with the suicide rate as a percentage of the population. The blue line is a line of best fit with a polynomial degree of 4. This plot shows a strong trend that as Depression rates increase, suicide rates do as well. However, this trend is not as strong as one would expect, and there are plenty of countries that appear to have a much higher suicide rate with even low depression rates. While these Depression rates were adjusted by OWID to account for underdiagnosis, this may suggest that the underdiagnosis is more extreme than they predicted. If not, then that would suggest that suicide and depression are not perfect proxies of each other, and that a sizable proportion of suicides are commited by people without Depression.
 
@@ -246,7 +246,7 @@ rm(numOfPoints)
 rm(totalSuicideSad)
 ```
 
-
+\newpage
 Correlation of Two and Single Parent Households to Suicide Rates:
 These two plots display the percent of children in a two parent household, or a single parent household, respecifvely to the suicide rate as a  percent of the population. The blue line is a line of best fit with a polynomial degree of 3. These two plots appear to be mirror images of each other as they are measuring similiar things. However children can also be in foster care, homeless, no parent households (raised by siblings), and other situations, which are not included in either plot. Thus these two plots are not perfect inverses of each other. As you can see, there is a clear trend that suicide rates increase as rates of single parent households increases, and decreases as rates of two parent households decreases. This correlation appears to plateau in the middle. This is due to the countries in that area collecting data over a longer period of time, and thus having more points in the scatter plot. 
 
@@ -291,7 +291,7 @@ rm(totalSuicideOneParent)
 rm(numOfObs)
 ```
 
-
+\newpage
 Correlation of Average Houehold Size and Suicide Rates:
 This plot displaces a faceted scatter plot of the average household size (in number of people) and the suicide rate as a percent of the population. This scatter plot is faceted by female, male, and total suicide rates. The blue line is a line of best fit with a polynomial degree of 1. This shows a strong trend amongst people that living with others deters suicide. We had initiallly thought that males and females might display different preferences in this regard, but it appears that those preferences at least do not present themselves in the suicide rates.
 
@@ -320,7 +320,7 @@ rm(suicideBySexAndAverageHouseSize)
 rm(numOfObs)
 ```
 
-
+\newpage
 Correlation of Single Households and Suicide Rates Plot:
 This plot displays a scatter plot of the percent of households consisting of a single person to the suicide rate as a percent of the population. The blue line is a line of best fit with a polynomial degree of 2. This shows a strong trend towards higher suicide rates as more people live alone. While we see the line start to dip at the highest rates of single person households, the amount of data in that area is small and the uncertainty of that dip is great. Thus, there is no reason then to believe that the suicide rate will not have a positive derivative (will increase) at all values of single person household rates. 
 
